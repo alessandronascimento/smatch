@@ -1,4 +1,4 @@
-CXX = 	/opt/intel/composer_xe_2013_sp1.0.080/bin/intel64/icpc
+CXX = 	g++ #/opt/intel/composer_xe_2013_sp1.0.080/bin/intel64/icpc
 CXXFLAGS =	-O2 -g3 -Wall -fmessage-length=0
 
 OBJS =		SMatch.o Mol.o Gaussian.o Coord.o Optimization.o Printer.o
