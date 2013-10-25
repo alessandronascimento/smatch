@@ -1,0 +1,6 @@
+reference_file		1CEL.pdb.gz
+multifile		INSMATCH
+search			212	GLU
+search			214	ASP
+search			217	GLU
+search_radius		5.0
