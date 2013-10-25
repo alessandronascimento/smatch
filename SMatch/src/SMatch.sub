@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -N SMatch
+#PBS -l nodes=1:ppn=1
+#PBS -o SMatch.out
+#PBS -e SMAtch.err
+#PBS -m bee
+#PBS -M al.s.nascimento@gmail.com
+#PBS -V 
+
+cd $PBS_O_WORKDIR
+
+time ./SMatch ../tools/1CEL.pdb.gz  212 214 217  > SMatch.log
+
