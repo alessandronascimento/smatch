@@ -12,7 +12,6 @@
 #include <nlopt.h>
 #include <nlopt.hpp>
 #include "Mol.h"
-#include "Gaussian.h"
 #include "Coord.h"
 #include "Printer.h"
 #include "SMatch.h"
@@ -22,9 +21,6 @@ public:
 	static Mol* M1;
 	Printer* Writer;
 	char info[98];
-	int find_atom_index(string atom, vector<string> atomnames);
-	int find_atom_index(string atom, Mol* M, int sa, int ea);
-	vector<string> find_common_atoms(Mol* M1);
 	Optimization(Printer* _Writer, Mol* _M1);
 	static double dist_squared(double x1, double x2, double y1, double y2, double z1, double z2);
 	static double objective_overlay_function(const std::vector<double> &x, std::vector<double> &grad, void *data);
