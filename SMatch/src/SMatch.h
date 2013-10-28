@@ -13,7 +13,7 @@
 struct opt_result_t {
 	bool succeded;
 	vector<double> rotrans;
-	vector<vector<double> > xyz;
+    vector<vector<vector<double> > >xyz;
 	double rmsd;
 };
 

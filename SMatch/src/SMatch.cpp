@@ -60,6 +60,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	Parser* Input = new Parser(argv[1]);
+    Coord* CoordManip = new Coord;
 
 	Mol* M1 = new Mol;
 	M1->read_pdb(Input->reference_file);
@@ -90,16 +91,16 @@ int main(int argc, char* argv[]) {
 
 		printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
 
-		vector<vector<double> > xyz;
-/*		Optimization* Opt = new Optimization(Writer, MExtract1);
+        vector<vector<vector<double> > >xyz;
+        Optimization* Opt = new Optimization(Writer, MExtract1);
 		opt_result_t* opt_result = new opt_result_t;
 		Opt->optimize_rmsd(MExtract2, opt_result);
 
 		if (opt_result->succeded){
-			M2->xyz = CoordManip->rototranslate(M2->xyz, M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
+            xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
 						opt_result->rotrans[4], opt_result->rotrans[5]);
-			Writer->write_pdb(M2, M2->xyz, 0.0, opt_result->rmsd, pdbmol);
-			Writer->write_pdb(MExtract2, opt_result->xyz, 0.0, 0.0, "ME2");
+//			Writer->write_pdb(M2, M2->xyz, 0.0, opt_result->rmsd, pdbmol);
+//			Writer->write_pdb(MExtract2, opt_result->xyz, 0.0, 0.0, "ME2");
 		}
 		delete MExtract2;
 		delete M2;
@@ -110,10 +111,9 @@ int main(int argc, char* argv[]) {
 	delete Writer;
 	delete MExtract1;
 	delete M1;
-*/
-	}
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
+
 
 
 

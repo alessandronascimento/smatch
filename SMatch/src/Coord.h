@@ -20,9 +20,11 @@ using namespace std;
 class Coord {
 public:
 	Coord();
-	vector<double> compute_com(vector<vector<double> >coords, Mol *M1);
-	vector<vector<double> > translate(Mol* M1, double dx, double dy, double dz);
-	vector<vector<double> >rototranslate(vector<vector<double> >coordinates, Mol* M1, double alpha, double beta, double gamma, double transx, double transy, double transz);
+//	vector<double> compute_com(vector<vector<double> >coords, Mol *M1);
+    vector<double> compute_com(Mol *M1);
+//	vector<vector<double> > translate(Mol* M1, double dx, double dy, double dz);
+//	vector<vector<double> >rototranslate(vector<vector<double> >coordinates, Mol* M1, double alpha, double beta, double gamma, double transx, double transy, double transz);
+    vector<vector<vector<double> > >rototranslate(Mol* M1, double alpha, double beta, double gamma, double transx, double transy, double transz);
 	virtual ~Coord();
 };
 

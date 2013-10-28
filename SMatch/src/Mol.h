@@ -40,6 +40,7 @@ struct Residue{
 class Mol {
 public:
 	vector<Residue> mymol;
+    vector<vector<double> >xyz;
 
 	void check_side_chain(Residue* Res, string atomname);
 	void check_restype(Residue* Res, string resname);
@@ -50,6 +51,7 @@ public:
 	bool read_gzpdb(string pdbin);
 	char residues_3_to_1_letter(string residue);
 	virtual ~Mol();
+    void copy_coordinates(void);
 };
 
 #endif /* MOL_H_ */
