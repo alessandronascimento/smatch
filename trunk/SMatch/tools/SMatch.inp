@@ -1,4 +1,4 @@
-reference_file		1CEL.pdb.gz
+reference_file	1CEL.pdb
 multifile		INSMATCH
 search			212	GLU
 search			214	ASP

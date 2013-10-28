@@ -26,9 +26,9 @@ public:
 	static double objective_overlay_function(const std::vector<double> &x, std::vector<double> &grad, void *data);
 	static double pre_optimize_rmsd_function(const std::vector<double> &x, std::vector<double> &grad, void *data);
 	void minimize_overlay_nlopt_ln_auglag(Mol* M2);
-	vector<vector<double> > update_coords(const std::vector<double> &x, Mol* M2);
+    vector<vector<vector<double> > >update_coords(const std::vector<double> &x, Mol* M2);
 	virtual ~Optimization();
-	static double compute_rmsd(Mol* M1, Mol* M2, vector<vector<double> > xyz, int r1, int r2);
+    static double compute_rmsd(Mol* M1, Mol* M2, vector<vector<vector<double> > >xyz, int r1, int r2);
 	void optimize_rmsd(Mol* M2, opt_result_t* opt_result);
 
 	struct opt_data{

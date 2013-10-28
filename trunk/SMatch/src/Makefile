@@ -1,9 +1,9 @@
 CXX = 	g++ #/opt/intel/composer_xe_2013_sp1.0.080/bin/intel64/icpc
-CXXFLAGS =	-O2 -g3 -Wall -fmessage-length=0
+CXXFLAGS =	-O2 -g3 -Wall -fmessage-length=0 -IC:/ASN/libs/nlopt/include
 
-OBJS =		SMatch.o Mol.o Parser.o Printer.o # Coord.o Optimization.o
+OBJS =		SMatch.o Mol.o Parser.o Printer.o Optimization.o Coord.o
 
-LIBS =		/usr/local/intel/nlopt/lib/libnlopt_cxx.a -lz
+LIBS =		-LC:/ASN/libs/nlopt/lib -L/usr/local/intel/nlopt/lib -lnlopt_cxx -lz
 
 TARGET =	SMatch
 

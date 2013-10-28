@@ -42,7 +42,6 @@ bool Mol::read_pdb(string pdbin){
 			fgets(str, 80, pdbfile);
 		}
 		int old_res;
-		int atom_counter;
 
 		sscanf(str, "%6s%5d%5s%3s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
 
@@ -103,6 +102,7 @@ bool Mol::read_pdb(string pdbin){
 #endif
 
 	}
+    this->copy_coordinates();
 	return true;
 }
 
@@ -132,7 +132,6 @@ bool Mol::read_gzpdb(string pdbin){
 	}
 
 	int old_res;
-	int atom_counter;
 
 	sscanf(str, "%6s%5d%5s%3s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
 
@@ -192,6 +191,7 @@ bool Mol::read_gzpdb(string pdbin){
 #endif
 
 	pclose(pdbfile);
+    this->copy_coordinates();
 	return true;
 }
 
@@ -298,4 +298,12 @@ void Mol::check_restype(Residue* Res, string resname){
 	else {
 		Res->is_apolar = false;
 	}
+}
+
+void Mol::copy_coordinates(void){
+    for (unsigned i=0; i<this->mymol.size(); i++){
+        for (unsigned j=0; j< this->mymol[i].xyz.size(); j++){
+            this->xyz.push_back(this->mymol[i].xyz[j]);
+        }
+    }
 }
