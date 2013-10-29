@@ -40,4 +40,5 @@ void Printer::write_pdb(Mol *Cmol, double energy, double rmsd, string outname){
 
 void Printer::print_info(char info[98]){
 	fprintf(logfile, "%-98s\n", info);
+	printf("%s\n", info);
 }

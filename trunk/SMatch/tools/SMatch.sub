@@ -10,5 +10,5 @@
 
 cd $PBS_O_WORKDIR
 
-/usr/local/mpich2/bin/mpiexec -n 6 ../src/SMatch SMatch.inp
+time /usr/local/mpich2/bin/mpiexec -n 6 ../src/SMatch SMatch.inp
 
