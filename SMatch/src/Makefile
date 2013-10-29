@@ -1,9 +1,9 @@
-CXX =		/opt/intel/composer_xe_2013_sp1.0.080/bin/intel64/icpc -fast#g++ 
-CXXFLAGS =	-O2 -g3 -Wall -fmessage-length=0 -IC:/ASN/libs/nlopt/include
+CXX =		/usr/local/mpich2/bin/mpicxx
+CXXFLAGS =	-O2 -g3 -Wall -fmessage-length=0 -I/usr/local/boost/include -I/usr/local/mpich2/include -IC:/ASN/libs/nlopt/include
 
-OBJS =		SMatch.o Mol.o Parser.o Printer.o Optimization.o Coord.o
+OBJS =		SMatch.o Mol.o Parser.o Printer.o Optimization.o Coord.o Engine.o
 
-LIBS =		-LC:/ASN/libs/nlopt/lib -L/usr/local/intel/nlopt/lib -lnlopt_cxx -lz
+LIBS =		-LC:/ASN/libs/nlopt/lib -L/usr/local/boost/lib -lnlopt_cxx -lboost_mpi -lboost_serialization -lz #-static
 
 TARGET =	SMatch
 
