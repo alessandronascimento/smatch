@@ -3,7 +3,6 @@
 // Author      : Alessandro Nascimento
 // Version     :
 // Copyright   : Rights Reserved
-// Description : Hello World in C, Ansi-style
 //============================================================================
 
 #include <stdio.h>
