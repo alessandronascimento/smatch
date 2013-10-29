@@ -11,6 +11,7 @@
 #include <zlib.h>
 #include <string>
 #include "Mol.h"
+#include "Parser.h"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ class Printer {
 public:
 	FILE* logfile;
 	Printer();
+	Printer(Parser* Input);
 	void write_pdb(Mol *Cmol, double energy, double rmsd, string outname);
 	virtual ~Printer();
 	void print_info(char info[98]);

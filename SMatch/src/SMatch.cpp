@@ -24,6 +24,7 @@ void mol_extraction(Mol* M1, Mol* MExtract1, Parser* Input){
 			}
 		}
 	}
+	MExtract1->filename = M1->filename;
 }
 
 void mol_extraction(Mol* M1, Mol* MExtract1, string resname){
@@ -32,6 +33,7 @@ void mol_extraction(Mol* M1, Mol* MExtract1, string resname){
 			MExtract1->mymol.push_back(M1->mymol[i]);
 		}
 	}
+	MExtract1->filename = M1->filename;
 }
 
 vector<string> make_unique(vector<string> resnames){
@@ -73,7 +75,7 @@ int main(int argc, char* argv[]) {
 
 	vector<string> unique = make_unique(Input->residue_types);
 
-	Printer* Writer = new Printer;
+	Printer* Writer = new Printer(Input);
 	Writer->write_pdb(MExtract1, 0.0, 0.0, "ME1");
 
 	ifstream multifile;

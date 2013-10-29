@@ -42,6 +42,9 @@ void Parser::parse_param(string param, ifstream &input){
 	else if (param == "search_radius"){
 		input >> this->search_radius;
 	}
+	else if (param == "output_prefix"){
+		input >> this->output_prefix;
+	}
 }
 
 Parser::~Parser() {
