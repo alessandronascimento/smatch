@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -N SMatch
+#PBS -l nodes=1:ppn=1
+#PBS -o SMatch.out
+#PBS -e SMatch.err
+#PBS -m bea
+#PBS -M al.s.nascimento@gmail.com
+#PBS -V 
+
+cd $PBS_O_WORKDIR
+
+time ../src/SMatch SMatch.inp
+
