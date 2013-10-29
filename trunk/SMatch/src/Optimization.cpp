@@ -24,7 +24,7 @@ double Optimization::compute_rmsd(Mol* M1, Mol* M2, vector<vector<vector<double>
 	double rmsd=0.0;
 	int Natoms=0;
     for (unsigned i=0; i<M1->mymol[r1].atomnames.size(); i++){
-        for (unsigned j=0; j<xyz.size(); j++){
+        for (unsigned j=0; j<M2->mymol[r2].atomnames.size(); j++){
             if (M1->mymol[r1].atomnames[i] == M2->mymol[r2].atomnames[j]){
                 rmsd += dist_squared(M1->mymol[r1].xyz[i][0], xyz[r2][j][0], M1->mymol[r1].xyz[i][1],
                         xyz[r2][j][1],M1->mymol[r1].xyz[i][2], xyz[r2][j][2]);
@@ -59,58 +59,8 @@ double Optimization::pre_optimize_rmsd_function(const std::vector<double> &x, st
 
     new_xyz = Manip->rototranslate(odata->M2, x[0], x[1], x[2], x[3], x[4], x[5]);
 	f = Optimization::compute_rmsd(M1, odata->M2, new_xyz, 0, odata->resnumber);
-    printf("f = %8.3f\n", f);
 	return(f);
 }
-
-/*void Optimization::minimize_overlay_nlopt_ln_auglag(Mol* M2){
-	Coord* Manip = new Coord;
-	vector<double> com1 = Manip->compute_com(M1->xyz, M1);
-	vector<double> com2 = Manip->compute_com(M2->xyz, M2);
-	vector<vector<double> > tmp = Manip->translate(M2, com1[0]-com2[0],com1[1]-com2[1], com1[2]-com2[2]);
-	M2->xyz = tmp;
-	nlopt::opt *opt = new nlopt::opt(nlopt::LN_AUGLAG,6);
-
-	vector<double> lb(6);
-	lb[0] = -180.0;
-	lb[1] = -90.0;
-	lb[2] = -180.0;
-	lb[3] = -6.0;
-	lb[4] = -6.0;
-	lb[5] = -6.0;
-	vector<double> ub(6);
-	ub[0] = 180.0;
-	ub[1] = 90.0;
-	ub[2] = 180.0;
-	ub[3] = 6.0;
-	ub[4] = 6.0;
-	ub[5] = 6.0;
-
-	opt->set_lower_bounds(lb);
-	opt->set_upper_bounds(ub);
-
-	opt->set_max_objective(Optimization::objective_overlay_function, M2);
-	opt->set_xtol_rel(1.0E-10);
-	opt->set_maxtime(60);
-
-	vector<double> x(6);
-	x[0] = 0.0;
-	x[1] = 0.0;
-	x[2] = 0.0;
-	x[3] = 0.0;
-	x[4] = 0.0;
-	x[5] = 0.0;
-
-	double fo;
-//	nlopt::result nres = opt->optimize(x,fo);
-	opt->optimize(x,fo);
-	printf("alpha: %8.3f beta: %8.3f gamma: %8.3f\n", x[0], x[1], x[2]);
-	printf("x: %8.3f y:%8.3f z:%8.3f\n", x[3], x[4], x[5]);
-	printf("FMAX: %8.3f\n", fo);
-	vector<vector<double> > xyz = update_coords(x, M2);
-	M2->xyz = xyz;
-	delete opt;
-} */
 
 void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 	nlopt::opt *opt = new nlopt::opt(nlopt::LN_NELDERMEAD,6);
@@ -168,12 +118,12 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
             xyz = update_coords(x, M2);
 			rmsd_total = 0.00;
 			int nres_sol=0;
-			printf("Comparing residue: M2[%d] (%.3f)\n", i, fo);
+//			printf("Comparing residue: M2[%d] (%.3f)\n", i, fo);
             for (unsigned k=0; k< M1->mymol.size(); k++){
                 for (unsigned j=0; j<M2->mymol.size(); j++){
                     if (M1->mymol[k].resname == M2->mymol[j].resname){
 						rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
-						printf("Alignment of M1[%d] with M2[%d] = %.3f\n", k, j, rmsd);
+//						printf("Alignment of M1[%d] with M2[%d] = %.3f\n", k, j, rmsd);
 						if (rmsd <= 5.0){
 							rmsd_total+= rmsd;
 							nres_sol++;
@@ -182,7 +132,7 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 				}
 			}
 
-			printf("RMSD: %.3f for %d residues\n", rmsd_total, nres_sol);
+//			printf("RMSD: %.3f for %d residues\n", rmsd_total, nres_sol);
 
             if ((rmsd_total < optimal_rmsd) and (nres_sol == int(M1->mymol.size()))){
 				optimal_rmsd=rmsd_total;

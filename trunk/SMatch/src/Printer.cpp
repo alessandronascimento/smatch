@@ -9,7 +9,10 @@
 
 Printer::Printer() {
 	logfile = fopen("SMatch.log", "w");
+}
 
+Printer::Printer(Parser* Input){
+	logfile = fopen((Input->output_prefix + ".log").c_str(), "w");
 }
 
 Printer::~Printer() {

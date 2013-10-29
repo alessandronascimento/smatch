@@ -23,6 +23,7 @@ public:
 	vector<string> residue_types;
 	double search_radius;
 	string multifile;
+	string output_prefix;
 	Parser(char* arg);
 	virtual ~Parser();
 	void parse_param(string param, ifstream &input);
