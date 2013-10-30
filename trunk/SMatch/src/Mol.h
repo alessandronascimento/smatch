@@ -24,7 +24,7 @@ struct Residue{
 	vector<vector<double> > xyz;
 	vector<string> atomnames;
 	string resname;
-	char chain;
+	string chain;
 	int resnumber;
 	int Natoms;
 	string atom_type;

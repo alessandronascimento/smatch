@@ -17,7 +17,7 @@ Engine::~Engine() {
 void Engine::mol_extraction(Mol* M1, Mol* MExtract1, Parser* Input){
 	for (unsigned i=0; i<Input->selected_residues.size(); i++){
 		for (unsigned j=0; j< M1->mymol.size(); j++){
-			if (M1->mymol[j].resnumber == Input->selected_residues[i]){
+			if ((M1->mymol[j].resnumber == Input->selected_residues[i]) and (M1->mymol[j].chain == Input->chain[i])){
 				MExtract1->mymol.push_back(M1->mymol[j]);
 			}
 		}

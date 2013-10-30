@@ -63,6 +63,7 @@ bool Mol::read_pdb(string pdbin){
 				Res->resname=string(resname);						//redundant
 				this->check_restype(Res, string(resname));			//redundant
 				Res->resnumber = resnumber;
+				Res->chain = string(chain);
 //				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
 			}
 			if (resnumber > old_res and string(atom) == "ATOM"){
@@ -83,6 +84,7 @@ bool Mol::read_pdb(string pdbin){
 				Res->resname=string(resname);
 				this->check_restype(Res, string(resname));
 				Res->resnumber = resnumber;
+				Res->chain = string(chain);
 //				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
 
 			}
@@ -153,6 +155,7 @@ bool Mol::read_gzpdb(string pdbin){
 			Res->resname=string(resname);						//redundant
 			this->check_restype(Res, string(resname));			//redundant
 			Res->resnumber = resnumber;
+			Res->chain = string(chain);
 			//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
 		}
 		if (resnumber > old_res and string(atom) == "ATOM"){
@@ -173,6 +176,7 @@ bool Mol::read_gzpdb(string pdbin){
 			Res->resname=string(resname);
 			this->check_restype(Res, string(resname));
 			Res->resnumber = resnumber;
+			Res->chain = string(chain);
 			//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
 
 		}

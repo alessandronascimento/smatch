@@ -21,6 +21,7 @@ public:
 	string reference_file;
 	vector<int> selected_residues;
 	vector<string> residue_types;
+	vector<string> chain;
 	double search_radius;
 	string multifile;
 	string output_prefix;
