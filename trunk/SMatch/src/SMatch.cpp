@@ -29,9 +29,6 @@ int main(int argc, char* argv[]) {
 	Mol* M1 = new Mol;
 	M1->read_pdb(Input->reference_file);
 
-	int number_of_selected_res= int(Input->selected_residues.size());
-	printf("%d residues were selected for structure extraction...\n", number_of_selected_res);
-
 	Mol* MExtract1 = new Mol;
 	RunEngine->mol_extraction(M1, MExtract1, Input);
 

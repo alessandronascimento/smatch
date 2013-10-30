@@ -60,11 +60,13 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 		Mol* M2 = new Mol;
 		Mol* MExtract2 = new Mol;
 		M2->read_pdb(pdb_list[i]);
-		for (unsigned i=0; i< unique.size(); i++){
-			mol_extraction(M2, MExtract2, unique[i]);
+		for (unsigned j=0; j< unique.size(); j++){
+			mol_extraction(M2, MExtract2, unique[j]);
 		}
 
+#ifdef DEBUG
 		printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
+#endif
 
         vector<vector<vector<double> > >xyz;
         Optimization* Opt = new Optimization(Writer, ME1);
@@ -74,8 +76,7 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 		if (opt_result->succeded){
             xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
 						opt_result->rotrans[4], opt_result->rotrans[5]);
-//			Writer->write_pdb(M2, M2->xyz, 0.0, opt_result->rmsd, pdbmol);
-//			Writer->write_pdb(MExtract2, opt_result->xyz, 0.0, 0.0, "ME2");
+			Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
 		}
 		delete MExtract2;
 		delete M2;
@@ -88,7 +89,7 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 	mpi::communicator world;
 	vector<string> pdb_list;
 	vector<string> tmp;
-	vector<vector<string> > chuncks;
+	vector<vector<string> > chuncks(world.size());
 
 	if (world.rank() == 0 ){
 
@@ -114,7 +115,7 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 				tmp.push_back(pdbmol);
 				pdb_list.erase(pdb_list.begin());
 			}
-			chuncks.push_back(tmp);
+			chuncks[i] = tmp;
 		}
 		tmp.clear();
 
