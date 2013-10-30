@@ -118,12 +118,10 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
             xyz = update_coords(x, M2);
 			rmsd_total = 0.00;
 			int nres_sol=0;
-//			printf("Comparing residue: M2[%d] (%.3f)\n", i, fo);
             for (unsigned k=0; k< M1->mymol.size(); k++){
                 for (unsigned j=0; j<M2->mymol.size(); j++){
                     if (M1->mymol[k].resname == M2->mymol[j].resname){
 						rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
-//						printf("Alignment of M1[%d] with M2[%d] = %.3f\n", k, j, rmsd);
 						if (rmsd <= 5.0){
 							rmsd_total+= rmsd;
 							nres_sol++;
@@ -131,8 +129,6 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 					}
 				}
 			}
-
-//			printf("RMSD: %.3f for %d residues\n", rmsd_total, nres_sol);
 
             if ((rmsd_total < optimal_rmsd) and (nres_sol == int(M1->mymol.size()))){
 				optimal_rmsd=rmsd_total;

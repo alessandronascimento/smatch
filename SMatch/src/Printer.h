@@ -21,6 +21,7 @@ public:
 	Printer();
 	Printer(Parser* Input);
 	void write_pdb(Mol *Cmol, double energy, double rmsd, string outname);
+	void write_pdb(Mol *Cmol, vector<vector<vector<double> > > xyz, double energy, double rmsd, string outname);
 	virtual ~Printer();
 	void print_info(char info[98]);
 };
