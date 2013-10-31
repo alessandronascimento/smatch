@@ -25,6 +25,7 @@ public:
 	double search_radius;
 	string multifile;
 	string output_prefix;
+	bool write_pdb;
 	Parser(char* arg);
 	virtual ~Parser();
 	void parse_param(string param, ifstream &input);

@@ -11,11 +11,12 @@ Mol::Mol() {
 }
 
 bool Mol::read_pdb(string pdbin){
+	bool reading = false;
 #ifdef DEBUG
 	printf("Opening file %s...\n", pdbin.c_str());
 #endif
 	if ((pdbin.substr(pdbin.size()-3, 3) == ".gz") or (pdbin.substr(pdbin.size()-2, 2) == ".z")){
-		this->read_gzpdb(pdbin);
+		reading  = this->read_gzpdb(pdbin);
 	}
 	else {
 
@@ -102,10 +103,10 @@ bool Mol::read_pdb(string pdbin){
 			}
 		}
 #endif
-
+		reading = true;
 	}
     this->copy_coordinates();
-	return true;
+	return reading;
 }
 
 bool Mol::read_gzpdb(string pdbin){
@@ -123,10 +124,11 @@ bool Mol::read_gzpdb(string pdbin){
 	vector<double> ixyz;
 	float  occ, bf, x, y, z;
 	string atomtmp;
+	bool is_ok = true;
 
 	if (pdbfile == NULL){
 		printf("Could not open PDB file %s. Please check.\n", pdbin.c_str());
-		exit(1);
+		is_ok = false;
 	}
 
 	while (str[0] != 'A' or str[1] != 'T' or str[2] != 'O' or str[3] != 'M'){ 	//ignoring header
@@ -196,7 +198,7 @@ bool Mol::read_gzpdb(string pdbin){
 
 	pclose(pdbfile);
     this->copy_coordinates();
-	return true;
+	return is_ok;
 }
 
 Mol::~Mol() {

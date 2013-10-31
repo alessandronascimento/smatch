@@ -10,6 +10,7 @@
 
 Parser::Parser(char* arg) {
 	search_radius=5.0;
+	write_pdb = false;
 	ifstream input(arg);
 	char line[256];
 	while (!input.eof()){
@@ -46,6 +47,12 @@ void Parser::parse_param(string param, ifstream &input){
 	}
 	else if (param == "output_prefix"){
 		input >> this->output_prefix;
+	}
+	else if (param == "write_pdb"){
+		input >> ch;
+		if (ch == "yes" or ch == "YES" or ch == "Yes"){
+			this->write_pdb = true;
+		}
 	}
 }
 

@@ -59,29 +59,30 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 	for (unsigned i=0; i< pdb_list.size(); i++) {
 		Mol* M2 = new Mol;
 		Mol* MExtract2 = new Mol;
-		M2->read_pdb(pdb_list[i]);
-		for (unsigned j=0; j< unique.size(); j++){
-			mol_extraction(M2, MExtract2, unique[j]);
-		}
+		if (M2->read_pdb(pdb_list[i])){
+			for (unsigned j=0; j< unique.size(); j++){
+				mol_extraction(M2, MExtract2, unique[j]);
+			}
 
 #ifdef DEBUG
-		printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
+			printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
 #endif
 
-        vector<vector<vector<double> > >xyz;
-        Optimization* Opt = new Optimization(Writer, ME1);
-		opt_result_t* opt_result = new opt_result_t;
-		Opt->optimize_rmsd(MExtract2, opt_result);
+			vector<vector<vector<double> > >xyz;
+			Optimization* Opt = new Optimization(Writer, ME1);
+			opt_result_t* opt_result = new opt_result_t;
+			Opt->optimize_rmsd(MExtract2, opt_result);
 
-		if (opt_result->succeded){
-            xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
+			if (opt_result->succeded and Input->write_pdb){
+				xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
 						opt_result->rotrans[4], opt_result->rotrans[5]);
-			Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
+				Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
+			}
 		}
 		delete MExtract2;
 		delete M2;
 	}
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
 int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer){
