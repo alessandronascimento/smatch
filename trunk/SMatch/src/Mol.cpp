@@ -127,12 +127,12 @@ bool Mol::read_gzpdb(string pdbin){
 	bool is_ok = true;
 
 	if (pdbfile == NULL){
-		printf("Could not open PDB file %s. Please check.\n", pdbin.c_str());
+		printf("Could not open PDB file %s. Skipping...\n", pdbin.c_str());
 		is_ok = false;
 	}
 
 	while (str[0] != 'A' or str[1] != 'T' or str[2] != 'O' or str[3] != 'M'){ 	//ignoring header
-		fgets(str, 80, pdbfile);
+		fgets(str, 100, pdbfile);
 	}
 
 	int old_res;

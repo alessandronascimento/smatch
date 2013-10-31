@@ -44,7 +44,7 @@ public:
 
 	void check_side_chain(Residue* Res, string atomname);
 	void check_restype(Residue* Res, string resname);
-	char str[80];
+	char str[100];
 	string filename;
 	Mol();
 	bool read_pdb(string pdbin);
