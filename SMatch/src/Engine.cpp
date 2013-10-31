@@ -54,7 +54,7 @@ vector<string> Engine::make_unique(vector<string> resnames){
 
 int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
 
-	Coord* CoordManip = new Coord;
+
 
 	for (unsigned i=0; i< pdb_list.size(); i++) {
 		Mol* M2 = new Mol;
@@ -74,10 +74,14 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 			Opt->optimize_rmsd(MExtract2, opt_result);
 
 			if (opt_result->succeded and Input->write_pdb){
+				Coord* CoordManip = new Coord;
 				xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
 						opt_result->rotrans[4], opt_result->rotrans[5]);
+				delete CoordManip;
 				Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
 			}
+			delete Opt;
+			delete opt_result;
 		}
 		delete MExtract2;
 		delete M2;
