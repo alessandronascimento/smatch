@@ -1,5 +1,5 @@
 CXX =		/usr/local/mpich2/bin/mpicxx
-CXXFLAGS =	-O3 -Wall -I/usr/local/boost/include -I/usr/local/mpich2/include -IC:/ASN/libs/nlopt/include
+CXXFLAGS =	-Ofast -Wall -I/usr/local/boost/include -I/usr/local/mpich2/include -IC:/ASN/libs/nlopt/include
 
 OBJS =		SMatch.o Mol.o Parser.o Printer.o Optimization.o Coord.o Engine.o
 
