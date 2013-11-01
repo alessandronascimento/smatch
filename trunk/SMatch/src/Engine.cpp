@@ -58,7 +58,6 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 		Mol* M2 = new Mol;
 		Mol* MExtract2 = new Mol;
 		if (M2->read_pdb(pdb_list[i])){
-			printf("Looking for file %s...\n", pdb_list[i].c_str());
 			for (unsigned j=0; j< unique.size(); j++){
 				mol_extraction(M2, MExtract2, unique[j]);
 			}
@@ -110,7 +109,7 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 
 		int chunck_size = int(pdb_list.size()/world.size());
 
-		printf("There are %d files, divided into %d chuncks of size %d.\n", int(pdb_list.size()), world.size(), chunck_size);
+//		printf("There are %d files, divided into %d chuncks of size %d.\n", int(pdb_list.size()), world.size(), chunck_size);
 
 		for (int i=0; i< world.size(); i++){
 			tmp.clear();
@@ -121,10 +120,15 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 			}
 			chuncks[i] = tmp;
 		}
+
 		tmp.clear();
 
 		for (unsigned i=0; i<pdb_list.size(); i++){
 			chuncks[i].push_back(pdb_list[i]);
+		}
+
+		for (unsigned i=0; i< chuncks.size(); i++){
+			printf("Chuncks[%d] has %d elements.\n", int(i), int(chuncks[i].size()));
 		}
 
 		scatter(world, chuncks, tmp,0);
