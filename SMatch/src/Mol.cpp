@@ -34,14 +34,106 @@ bool Mol::read_pdb(string pdbin){
 		float  occ, bf, x, y, z;
 		pdbfile = fopen(pdbin.c_str(), "r");
 
-		if (pdbfile == NULL){
-			printf("Could not open PDB file %s. Please check.\n", pdbin.c_str());
-			exit(1);
-		}
+		if (pdbfile != NULL){
 
-		while (str[0] != 'A' or str[1] != 'T' or str[2] != 'O' or str[3] != 'M'){ 	//ignoring header
+			while (string(str).substr(0,4) != "ATOM"){ 	//ignoring header
+				fgets(str, 80, pdbfile);
+			}
+			int old_res;
+
+			sscanf(str, "%6s%5d%5s%3s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
+
+			old_res=resnumber;
+
+			Residue* Res = new Residue;
+			Res->Natoms=0;
+
+			while (!feof(pdbfile)){
+				if(resnumber == old_res and string(atom) == "ATOM"){
+					ixyz.push_back(x);
+					ixyz.push_back(y);
+					ixyz.push_back(z);
+					Res->xyz.push_back(ixyz);
+					ixyz.clear();
+					Res->atomnames.push_back(string(atomname));
+					this->check_side_chain(Res, string(atomname));
+					Res->Natoms++;
+					Res->resname=string(resname);						//redundant
+					this->check_restype(Res, string(resname));			//redundant
+					Res->resnumber = resnumber;
+					Res->chain = string(chain);
+					//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
+				}
+				if (resnumber > old_res and string(atom) == "ATOM"){
+					mymol.push_back(*Res);
+					delete Res;
+					Res = new Residue;
+
+					old_res=resnumber;
+
+					ixyz.push_back(x);
+					ixyz.push_back(y);
+					ixyz.push_back(z);
+					Res->xyz.push_back(ixyz);
+					ixyz.clear();
+					Res->atomnames.push_back(string(atomname));
+					this->check_side_chain(Res, string(atomname));
+					Res->Natoms++;
+					Res->resname=string(resname);
+					this->check_restype(Res, string(resname));
+					Res->resnumber = resnumber;
+					Res->chain = string(chain);
+					//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
+
+				}
+				fscanf(pdbfile, "%6s%5d%4s%4s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
+			}
+			mymol.push_back(*Res);
+			fclose(pdbfile);
+
+#ifdef DEBUG
+			printf("The molecule has %d residues\n", int(mymol.size()));
+			for (unsigned j=0; j< mymol.size(); j++){
+				for (unsigned i=0; i< mymol[j].atomnames.size(); i++){
+					printf("%4s %4d %4s %4d %8.3f %8.3f %8.3f\n", mymol[j].atomnames[i].c_str(), i+1, mymol[j].resname.c_str(), j+1, mymol[j].xyz[i][0], mymol[j].xyz[i][1],
+							mymol[j].xyz[i][2]);
+				}
+			}
+#endif
+			reading = true;
+		}
+		else {
+			printf("Could not open PDB file %s. Please check.\n", pdbin.c_str());
+			reading = false;
+		}
+	}
+	this->copy_coordinates();
+	return reading;
+}
+
+bool Mol::read_gzpdb(string pdbin){
+	FILE* pdbfile;
+	pdbfile = popen(("zcat " + pdbin).c_str(), "r");
+
+	this->filename = pdbin;
+	char atom[10];
+	char atomname[10];
+	char resname[10];
+	char chain[2];
+	char at[2];
+	int itmp;
+	int resnumber;
+	vector<double> ixyz;
+	float  occ, bf, x, y, z;
+	string atomtmp;
+	bool is_ok = true;
+
+	if (pdbfile != NULL){
+
+		while (string(str).substr(0,4) != "ATOM"){ 	//ignoring header
 			fgets(str, 80, pdbfile);
 		}
+
 		int old_res;
 
 		sscanf(str, "%6s%5d%5s%3s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
@@ -65,7 +157,7 @@ bool Mol::read_pdb(string pdbin){
 				this->check_restype(Res, string(resname));			//redundant
 				Res->resnumber = resnumber;
 				Res->chain = string(chain);
-//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
+				//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
 			}
 			if (resnumber > old_res and string(atom) == "ATOM"){
 				mymol.push_back(*Res);
@@ -86,118 +178,29 @@ bool Mol::read_pdb(string pdbin){
 				this->check_restype(Res, string(resname));
 				Res->resnumber = resnumber;
 				Res->chain = string(chain);
-//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
+				//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
 
 			}
-				fscanf(pdbfile, "%6s%5d%4s%4s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
-			}
+			fscanf(pdbfile, "%6s%5d%4s%4s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
+		}
 		mymol.push_back(*Res);
-		fclose(pdbfile);
 
 #ifdef DEBUG
 		printf("The molecule has %d residues\n", int(mymol.size()));
 		for (unsigned j=0; j< mymol.size(); j++){
 			for (unsigned i=0; i< mymol[j].atomnames.size(); i++){
 				printf("%4s %4d %4s %4d %8.3f %8.3f %8.3f\n", mymol[j].atomnames[i].c_str(), i+1, mymol[j].resname.c_str(), j+1, mymol[j].xyz[i][0], mymol[j].xyz[i][1],
-					mymol[j].xyz[i][2]);
+						mymol[j].xyz[i][2]);
 			}
 		}
 #endif
-		reading = true;
 	}
-    this->copy_coordinates();
-	return reading;
-}
-
-bool Mol::read_gzpdb(string pdbin){
-	FILE* pdbfile;
-	pdbfile = popen(("zcat " + pdbin).c_str(), "r");
-
-	this->filename = pdbin;
-	char atom[10];
-	char atomname[10];
-	char resname[10];
-	char chain[2];
-	char at[2];
-	int itmp;
-	int resnumber;
-	vector<double> ixyz;
-	float  occ, bf, x, y, z;
-	string atomtmp;
-	bool is_ok = true;
-
-	if (pdbfile == NULL){
+	else {
 		printf("Could not open PDB file %s. Skipping...\n", pdbin.c_str());
 		is_ok = false;
 	}
-
-	while (str[0] != 'A' or str[1] != 'T' or str[2] != 'O' or str[3] != 'M'){ 	//ignoring header
-		fgets(str, 100, pdbfile);
-	}
-
-	int old_res;
-
-	sscanf(str, "%6s%5d%5s%3s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
-
-	old_res=resnumber;
-
-	Residue* Res = new Residue;
-	Res->Natoms=0;
-
-	while (!feof(pdbfile)){
-		if(resnumber == old_res and string(atom) == "ATOM"){
-			ixyz.push_back(x);
-			ixyz.push_back(y);
-			ixyz.push_back(z);
-			Res->xyz.push_back(ixyz);
-			ixyz.clear();
-			Res->atomnames.push_back(string(atomname));
-			this->check_side_chain(Res, string(atomname));
-			Res->Natoms++;
-			Res->resname=string(resname);						//redundant
-			this->check_restype(Res, string(resname));			//redundant
-			Res->resnumber = resnumber;
-			Res->chain = string(chain);
-			//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
-		}
-		if (resnumber > old_res and string(atom) == "ATOM"){
-			mymol.push_back(*Res);
-			delete Res;
-			Res = new Residue;
-
-			old_res=resnumber;
-
-			ixyz.push_back(x);
-			ixyz.push_back(y);
-			ixyz.push_back(z);
-			Res->xyz.push_back(ixyz);
-			ixyz.clear();
-			Res->atomnames.push_back(string(atomname));
-			this->check_side_chain(Res, string(atomname));
-			Res->Natoms++;
-			Res->resname=string(resname);
-			this->check_restype(Res, string(resname));
-			Res->resnumber = resnumber;
-			Res->chain = string(chain);
-			//				printf("%4s %4d %4s %6d\n", atomname, itmp, resname, resnumber);
-
-		}
-		fscanf(pdbfile, "%6s%5d%4s%4s%1s%4d %8f%8f%8f%6f%6f%s", atom, &itmp, atomname, resname, chain, &resnumber, &x, &y, &z, &occ, &bf, at);
-	}
-	mymol.push_back(*Res);
-
-#ifdef DEBUG
-	printf("The molecule has %d residues\n", int(mymol.size()));
-	for (unsigned j=0; j< mymol.size(); j++){
-		for (unsigned i=0; i< mymol[j].atomnames.size(); i++){
-			printf("%4s %4d %4s %4d %8.3f %8.3f %8.3f\n", mymol[j].atomnames[i].c_str(), i+1, mymol[j].resname.c_str(), j+1, mymol[j].xyz[i][0], mymol[j].xyz[i][1],
-					mymol[j].xyz[i][2]);
-		}
-	}
-#endif
-
 	pclose(pdbfile);
-    this->copy_coordinates();
+	this->copy_coordinates();
 	return is_ok;
 }
 
@@ -307,9 +310,9 @@ void Mol::check_restype(Residue* Res, string resname){
 }
 
 void Mol::copy_coordinates(void){
-    for (unsigned i=0; i<this->mymol.size(); i++){
-        for (unsigned j=0; j< this->mymol[i].xyz.size(); j++){
-            this->xyz.push_back(this->mymol[i].xyz[j]);
-        }
-    }
+	for (unsigned i=0; i<this->mymol.size(); i++){
+		for (unsigned j=0; j< this->mymol[i].xyz.size(); j++){
+			this->xyz.push_back(this->mymol[i].xyz[j]);
+		}
+	}
 }
