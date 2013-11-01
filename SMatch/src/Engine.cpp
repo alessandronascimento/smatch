@@ -54,12 +54,11 @@ vector<string> Engine::make_unique(vector<string> resnames){
 
 int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
 
-
-
 	for (unsigned i=0; i< pdb_list.size(); i++) {
 		Mol* M2 = new Mol;
 		Mol* MExtract2 = new Mol;
 		if (M2->read_pdb(pdb_list[i])){
+			printf("Looking for file %s...\n", pdb_list[i].c_str());
 			for (unsigned j=0; j< unique.size(); j++){
 				mol_extraction(M2, MExtract2, unique[j]);
 			}
