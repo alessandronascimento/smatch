@@ -30,6 +30,8 @@ public:
 	vector<string> make_unique(vector<string> resnames);
 	int serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list);
 	int run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer);
+	int run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer);
+	int serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list);
 };
 
 #endif /* ENGINE_H_ */

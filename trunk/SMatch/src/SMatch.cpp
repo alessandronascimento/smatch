@@ -38,7 +38,11 @@ int main(int argc, char* argv[]) {
 	Printer* Writer = new Printer(Input);
 	Writer->write_pdb(MExtract1, 0.0, 0.0, "ME1");
 
+#ifdef HAS_MPI
 	RunEngine->run_over_mpi(argc, argv, MExtract1, unique, Input, Writer);
+#else
+	RunEngine->run_serial(MExtract1, unique, Input, Writer);
+#endif
 
 	delete RunEngine;
 	delete MExtract1;
