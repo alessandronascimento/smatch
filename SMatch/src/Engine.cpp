@@ -87,6 +87,7 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 	return EXIT_SUCCESS;
 }
 
+#ifdef HAS_MPI
 int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer){
 	mpi::environment env(argc, argv);
 	mpi::communicator world;
@@ -139,4 +140,63 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 		serial_search(ME1, Writer, Input, unique, tmp);
 	}
 	return 0;
+}
+#endif
+
+int Engine::run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer){
+	vector<string> pdb_list;
+	ifstream multifile;
+	multifile.open(Input->multifile.c_str());
+	string pdbmol;
+	multifile >> pdbmol;
+
+	while (!multifile.eof() and pdbmol != "EOF"){
+		pdb_list.push_back(pdbmol);
+		multifile >> pdbmol;
+	}
+	multifile.close();
+
+	this->serial_search_omp(ME1, Writer, Input, unique, pdb_list);
+
+	return 0;
+
+}
+
+int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
+
+#pragma omp parallel
+	{
+#pragma omp for schedule(static, 1)
+		for (unsigned i=0; i< pdb_list.size(); i++) {
+			Mol* M2 = new Mol;
+			Mol* MExtract2 = new Mol;
+			if (M2->read_pdb(pdb_list[i])){
+				for (unsigned j=0; j< unique.size(); j++){
+					mol_extraction(M2, MExtract2, unique[j]);
+				}
+
+#ifdef DEBUG
+				printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
+#endif
+
+				vector<vector<vector<double> > >xyz;
+				Optimization* Opt = new Optimization(Writer, ME1);
+				opt_result_t* opt_result = new opt_result_t;
+				Opt->optimize_rmsd(MExtract2, opt_result);
+
+				if (opt_result->succeded and Input->write_pdb){
+					Coord* CoordManip = new Coord;
+					xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
+							opt_result->rotrans[4], opt_result->rotrans[5]);
+					delete CoordManip;
+					Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
+				}
+				delete Opt;
+				delete opt_result;
+			}
+			delete MExtract2;
+			delete M2;
+		}
+	}
+	return EXIT_SUCCESS;
 }
