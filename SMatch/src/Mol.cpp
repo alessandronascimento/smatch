@@ -205,7 +205,8 @@ bool Mol::read_gzpdb(string pdbin){
 }
 
 Mol::~Mol() {
-	// TODO Auto-generated destructor stub
+	this->mymol.clear();
+	this->xyz.clear();
 }
 
 char Mol::residues_3_to_1_letter(string residue){
