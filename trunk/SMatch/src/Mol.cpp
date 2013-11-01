@@ -194,12 +194,12 @@ bool Mol::read_gzpdb(string pdbin){
 			}
 		}
 #endif
+	pclose(pdbfile);
 	}
 	else {
 		printf("Could not open PDB file %s. Skipping...\n", pdbin.c_str());
 		is_ok = false;
 	}
-	pclose(pdbfile);
 	this->copy_coordinates();
 	return is_ok;
 }
