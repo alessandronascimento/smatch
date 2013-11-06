@@ -44,6 +44,8 @@ int main(int argc, char* argv[]) {
 	RunEngine->run_serial(MExtract1, unique, Input, Writer);
 #endif
 
+	unique.clear();
+
 	delete RunEngine;
 	delete MExtract1;
 	delete M1;
