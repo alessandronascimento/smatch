@@ -48,6 +48,7 @@ vector<vector<vector<double> > >Optimization::update_coords(const std::vector<do
             xyz.push_back(M2->mymol[i].xyz);                // xyz.
         }
 	}
+	delete Manip;
 	return (xyz);
 }
 
@@ -59,6 +60,7 @@ double Optimization::pre_optimize_rmsd_function(const std::vector<double> &x, st
 
     new_xyz = Manip->rototranslate(odata->M2, x[0], x[1], x[2], x[3], x[4], x[5]);
 	f = Optimization::compute_rmsd(M1, odata->M2, new_xyz, 0, odata->resnumber);
+	delete Manip;
 	return(f);
 }
 
@@ -152,4 +154,5 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 		opt_result->succeded = true;
 	}
 	delete opt;
+	delete odata;
 }
