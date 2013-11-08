@@ -93,12 +93,6 @@ bool Mol::read_pdb(string pdbin){
 
 #ifdef DEBUG
 			printf("The molecule has %d residues\n", int(mymol.size()));
-			for (unsigned j=0; j< mymol.size(); j++){
-				for (unsigned i=0; i< mymol[j].atomnames.size(); i++){
-					printf("%4s %4d %4s %4d %8.3f %8.3f %8.3f\n", mymol[j].atomnames[i].c_str(), i+1, mymol[j].resname.c_str(), j+1, mymol[j].xyz[i][0], mymol[j].xyz[i][1],
-							mymol[j].xyz[i][2]);
-				}
-			}
 #endif
 			reading = true;
 		}
@@ -187,13 +181,8 @@ bool Mol::read_gzpdb(string pdbin){
 
 #ifdef DEBUG
 		printf("The molecule has %d residues\n", int(mymol.size()));
-		for (unsigned j=0; j< mymol.size(); j++){
-			for (unsigned i=0; i< mymol[j].atomnames.size(); i++){
-				printf("%4s %4d %4s %4d %8.3f %8.3f %8.3f\n", mymol[j].atomnames[i].c_str(), i+1, mymol[j].resname.c_str(), j+1, mymol[j].xyz[i][0], mymol[j].xyz[i][1],
-						mymol[j].xyz[i][2]);
-			}
-		}
 #endif
+
 	pclose(pdbfile);
 	}
 	else {

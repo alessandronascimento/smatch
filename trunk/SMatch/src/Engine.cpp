@@ -12,6 +12,7 @@ Engine::Engine() {
 }
 
 Engine::~Engine() {
+	printf("Quiting SMatch...\n");
 }
 
 void Engine::mol_extraction(Mol* M1, Mol* MExtract1, Parser* Input){
