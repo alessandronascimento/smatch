@@ -140,8 +140,8 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 		}
 	}
 #ifdef DEBUG
-	printf("alpha: %8.3f beta: %8.3f gamma: %8.3f\n", optimal_x[0], optimal_x[1], optimal_x[2]);
-	printf("x: %8.3f y:%8.3f z:%8.3f\n", optimal_x[3], optimal_x[4], optimal_x[5]);
+//	printf("alpha: %8.3f beta: %8.3f gamma: %8.3f\n", optimal_x[0], optimal_x[1], optimal_x[2]);
+//	printf("x: %8.3f y:%8.3f z:%8.3f\n", optimal_x[3], optimal_x[4], optimal_x[5]);
 #endif
 	xyz = update_coords(optimal_x, M2);
 	if (optimal_rmsd < 50.0){
