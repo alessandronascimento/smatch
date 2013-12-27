@@ -16,9 +16,10 @@
 #include "Printer.h"
 #include "Parser.h"
 #include "SMatch.h"
+#ifdef HAS_MPI
 #include "boost/mpi.hpp"
 namespace mpi = boost::mpi;
-
+#endif
 
 using namespace std;
 class Engine {
@@ -29,9 +30,11 @@ public:
 	void mol_extraction(Mol* M1, Mol* MExtract1, string resname);
 	vector<string> make_unique(vector<string> resnames);
 	int serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list);
-	int run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer);
 	int run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer);
 	int serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list);
+#ifdef HAS_MPI
+    int run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer);
+#endif
 };
 
 #endif /* ENGINE_H_ */
