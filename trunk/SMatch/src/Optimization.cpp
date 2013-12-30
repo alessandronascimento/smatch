@@ -13,6 +13,12 @@ Optimization::Optimization(Printer* _Writer, Mol* _M1) {
 
 }
 
+Optimization::Optimization(Printer* _Writer, Mol* _M1, Parser* _Input) {
+    M1 = _M1;
+    Writer = _Writer;
+    Input = _Input;
+}
+
 Optimization::~Optimization() {
 }
 
