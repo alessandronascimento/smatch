@@ -13,6 +13,11 @@ struct opt_result_t {
 		vector<double> rotrans;
 	    vector<vector<vector<double> > >xyz;
 		double rmsd;
+        vector<string> smatched1;
+        vector<string> smatched2;
+        vector<int> imatched1;
+        vector<int> imatched2;
+        vector<double> rmsds;
 	};
 
 #endif /* SMATCH_H_ */
