@@ -11,6 +11,7 @@
 Parser::Parser(char* arg) {
 	search_radius=5.0;
 	write_pdb = false;
+    matching_residues = -1;
 	ifstream input(arg);
 	char line[256];
 	while (!input.eof()){
@@ -54,6 +55,9 @@ void Parser::parse_param(string param, ifstream &input){
 			this->write_pdb = true;
 		}
 	}
+    else if (param == "matching_residues"){
+        input >> this->matching_residues;
+    }
 }
 
 Parser::~Parser() {

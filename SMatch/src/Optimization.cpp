@@ -71,6 +71,10 @@ double Optimization::pre_optimize_rmsd_function(const std::vector<double> &x, st
 }
 
 void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
+    int nmatch = Input->matching_residues;
+    if ((nmatch < 1) or (nmatch > int(M1->mymol.size()))){
+        nmatch = int(M1->mymol.size());
+    }
 	nlopt::opt *opt = new nlopt::opt(nlopt::LN_NELDERMEAD,6);
 	opt_data *odata = new opt_data;
     vector<vector<vector<double> > >xyz;
@@ -138,7 +142,7 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 				}
 			}
 
-            if ((rmsd_total < optimal_rmsd) and (nres_sol == int(M1->mymol.size()))){
+            if ((rmsd_total < optimal_rmsd) and (nres_sol >= nmatch)){
 				optimal_rmsd=rmsd_total;
 				optimal_x = x;
 				optimal_Nres=nres_sol;
