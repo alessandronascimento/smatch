@@ -75,11 +75,16 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     if ((nmatch < 1) or (nmatch > int(M1->mymol.size()))){
         nmatch = int(M1->mymol.size());
     }
-	nlopt::opt *opt = new nlopt::opt(nlopt::LN_NELDERMEAD,6);
+
+    nlopt::opt *opt = new nlopt::opt(nlopt::LN_NELDERMEAD,6);
 	opt_data *odata = new opt_data;
     vector<vector<vector<double> > >xyz;
 	odata->M2 = M2;
 	opt_result->succeded = false;
+
+    vector<int> imatched1, imatched2;
+    vector<string> smatched1, smatched2;
+    vector<double> rmsds;
 
 	vector<double> lb(6);
 	lb[0] = -180.0;
@@ -134,9 +139,14 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
                 for (unsigned j=0; j<M2->mymol.size(); j++){
                     if (M1->mymol[k].resname == M2->mymol[j].resname){
 						rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
-						if (rmsd <= 5.0){
+                        if (rmsd <= Input->search_radius){
 							rmsd_total+= rmsd;
 							nres_sol++;
+                            smatched1.push_back(M1->mymol[k].resname);
+                            smatched2.push_back(M2->mymol[j].resname);
+                            imatched1.push_back(M1->mymol[k].resnumber);
+                            imatched2.push_back(M2->mymol[j].resnumber);
+                            rmsds.push_back(rmsd);
 						}
 					}
 				}
@@ -146,15 +156,22 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 				optimal_rmsd=rmsd_total;
 				optimal_x = x;
 				optimal_Nres=nres_sol;
+                opt_result->imatched1 = imatched1;
+                opt_result->imatched2 = imatched2;
+                opt_result->smatched1 = smatched1;
+                opt_result->smatched2 = smatched2;
+                opt_result->rmsds = rmsds;
 			}
 		}
+        imatched1.clear();
+        imatched2.clear();
+        smatched1.clear();
+        smatched1.clear();
+        rmsds.clear();
 	}
-#ifdef DEBUG
-//	printf("alpha: %8.3f beta: %8.3f gamma: %8.3f\n", optimal_x[0], optimal_x[1], optimal_x[2]);
-//	printf("x: %8.3f y:%8.3f z:%8.3f\n", optimal_x[3], optimal_x[4], optimal_x[5]);
-#endif
+
 	xyz = update_coords(optimal_x, M2);
-	if (optimal_rmsd < 50.0){
+    if (optimal_rmsd < (2.0*nmatch*Input->search_radius)){
 		sprintf(info, "FILE = %-40.40s RMSD = %8.3f  N = %4d",M2->filename.c_str(), optimal_rmsd, optimal_Nres);
 		Writer->print_info(info);
 

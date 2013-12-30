@@ -72,6 +72,14 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 			opt_result_t* opt_result = new opt_result_t;
 			Opt->optimize_rmsd(MExtract2, opt_result);
 
+            if (opt_result->succeded){
+                printf("\tMatched residues:\n");
+                for (unsigned a=0; a< opt_result->imatched1.size(); a++){
+                    printf("\t\t %4.4s %4d %4.4s %4d %6.4f\n", opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
+                           opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
+                }
+            }
+
 			if (opt_result->succeded and Input->write_pdb){
 				Coord* CoordManip = new Coord;
 				xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],

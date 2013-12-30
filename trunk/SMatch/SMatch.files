@@ -41,7 +41,6 @@ src/Printer.h
 src/SMatch.cpp
 src/SMatch.h
 src/SMatch.sub
-src/TODO
 build/Makefile
 tools/1CEL.pdb.gz
 tools/3EXD.pdb
