@@ -30,9 +30,6 @@ src/Coord.cpp
 src/Coord.h
 src/Engine.h
 src/Engine.cpp
-src/INSMATCH.test
-src/INSMATCH.total
-src/ME1.pdb.gz
 src/Mol.cpp
 src/Mol.h
 src/Optimization.cpp
@@ -41,12 +38,11 @@ src/Parser.cpp
 src/Parser.h
 src/Printer.cpp
 src/Printer.h
-src/SMatch
 src/SMatch.cpp
 src/SMatch.h
 src/SMatch.sub
 src/TODO
-src/Makefile
+build/Makefile
 tools/1CEL.pdb.gz
 tools/3EXD.pdb
 tools/INSMATCH

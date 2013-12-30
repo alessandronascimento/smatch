@@ -15,14 +15,17 @@
 #include "Coord.h"
 #include "Printer.h"
 #include "SMatch.h"
+#include "Parser.h"
 
 class Optimization {
 public:
 
 	static Mol* M1;
 	Printer* Writer;
+    Parser* Input;
 	char info[98];
 	Optimization(Printer* _Writer, Mol* _M1);
+    Optimization(Printer* _Writer, Mol* _M1, Parser* _Input);
 	static double dist_squared(double x1, double x2, double y1, double y2, double z1, double z2);
 	static double pre_optimize_rmsd_function(const std::vector<double> &x, std::vector<double> &grad, void *data);
 	void minimize_overlay_nlopt_ln_auglag(Mol* M2);

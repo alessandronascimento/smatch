@@ -68,7 +68,7 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 #endif
 
 			vector<vector<vector<double> > >xyz;
-			Optimization* Opt = new Optimization(Writer, ME1);
+            Optimization* Opt = new Optimization(Writer, ME1, Input);
 			opt_result_t* opt_result = new opt_result_t;
 			Opt->optimize_rmsd(MExtract2, opt_result);
 
@@ -181,7 +181,7 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
 #endif
 
 				vector<vector<vector<double> > >xyz;
-				Optimization* Opt = new Optimization(Writer, ME1);
+                Optimization* Opt = new Optimization(Writer, ME1, Input);
 				opt_result_t* opt_result = new opt_result_t;
 				Opt->optimize_rmsd(MExtract2, opt_result);
 
