@@ -26,6 +26,7 @@ public:
 	string multifile;
 	string output_prefix;
 	bool write_pdb;
+    int matching_residues;
 	Parser(char* arg);
 	virtual ~Parser();
 	void parse_param(string param, ifstream &input);

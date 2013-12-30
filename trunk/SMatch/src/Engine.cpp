@@ -129,9 +129,11 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 			chuncks[i].push_back(pdb_list[i]);
 		}
 
+#ifdef DEBUG
 		for (unsigned i=0; i< chuncks.size(); i++){
 			printf("Chuncks[%d] has %d elements.\n", int(i), int(chuncks[i].size()));
 		}
+#endif
 
 		scatter(world, chuncks, tmp,0);
 		serial_search(ME1, Writer, Input, unique, tmp);
