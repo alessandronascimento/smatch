@@ -65,3 +65,14 @@ void Printer::print_info(char info[98]){
 	fprintf(logfile, "%-98s\n", info);
 	printf("%s\n", info);
 }
+
+void Printer::print_welcome(void){
+    printf("****************************************************************************\n");
+    printf("*            SMATCH - Structure-Based Active Site Matching                 *\n");
+    printf("*                                                                          *\n");
+    printf("*  Alessandro S. Nascimento - Instituto de Fisica de Sao Carlos - IFSC/USP *\n");
+    printf("*                         asnascimento@ifsc.usp.br                         *\n");
+    printf("*                    http://www.biotechmol.ifsc.usp.br                     *\n");
+    printf("*                                                                          *\n");
+    printf("****************************************************************************\n");
+}
