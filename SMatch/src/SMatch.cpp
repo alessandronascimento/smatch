@@ -23,20 +23,21 @@ int main(int argc, char* argv[]) {
 	}
 
 	Parser* Input = new Parser(argv[1]);
+    Printer* Writer = new Printer(Input);
+
+    Writer->print_welcome();
 
 	Engine* RunEngine = new Engine;
-
 	Mol* M1 = new Mol;
 	M1->read_pdb(Input->reference_file);
 
 	Mol* MExtract1 = new Mol;
 	RunEngine->mol_extraction(M1, MExtract1, Input);
-
+    Writer->write_pdb(MExtract1, 0.0, 0.0, "ME1");
 
 	vector<string> unique = RunEngine->make_unique(Input->residue_types);
 
-	Printer* Writer = new Printer(Input);
-	Writer->write_pdb(MExtract1, 0.0, 0.0, "ME1");
+
 
 #ifdef HAS_MPI
 	RunEngine->run_over_mpi(argc, argv, MExtract1, unique, Input, Writer);

@@ -75,9 +75,13 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
             if (opt_result->succeded){
                 printf("\tMatched residues:\n");
                 for (unsigned a=0; a< opt_result->imatched1.size(); a++){
-                    printf("\t\t %4.4s %4d %4.4s %4d %6.4f\n", opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
-                           opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
+                    printf("\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f\n", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
+                           MExtract2->filename.c_str(), opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
                 }
+            }
+
+            else {
+                printf("No matched results for %-15.15s\n", MExtract2->filename.c_str());
             }
 
 			if (opt_result->succeded and Input->write_pdb){
@@ -194,6 +198,17 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
                 Optimization* Opt = new Optimization(Writer, ME1, Input);
 				opt_result_t* opt_result = new opt_result_t;
 				Opt->optimize_rmsd(MExtract2, opt_result);
+
+                if (opt_result->succeded){
+                    printf("\tMatched residues:\n");
+                    for (unsigned a=0; a< opt_result->imatched1.size(); a++){
+                        printf("\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f\n", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
+                               MExtract2->filename.c_str(), opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
+                    }
+                }
+                else {
+                    printf("No matched results for %-15.15s\n", MExtract2->filename.c_str());
+                }
 
 				if (opt_result->succeded and Input->write_pdb){
 					Coord* CoordManip = new Coord;

@@ -12,6 +12,7 @@
 #include <nlopt.h>
 #include <nlopt.hpp>
 #include "Mol.h"
+#include "Parser.h"
 #include "Coord.h"
 #include "Printer.h"
 #include "SMatch.h"
