@@ -32,7 +32,7 @@ void Printer::write_pdb(Mol *Cmol, double energy, double rmsd, string outname){
 //        				Cmol->mymol[i].resname.c_str(),  j+1, Cmol->mymol[i].xyz[j][0], Cmol->mymol[i].xyz[j][1], Cmol->mymol[i].xyz[j][2]);
 #endif
         		gzprintf(outpdb, "ATOM   %4d %-3s  %3.3s  %4d    % 8.3f % 7.3f % 7.3f  0.00    0.00  1\n", atom_count, Cmol->mymol[i].atomnames[j].c_str(),
-        				Cmol->mymol[i].resname.c_str(),  j+1, Cmol->mymol[i].xyz[j][0], Cmol->mymol[i].xyz[j][1], Cmol->mymol[i].xyz[j][2]);
+                        Cmol->mymol[i].resname.c_str(),  i+1, Cmol->mymol[i].xyz[j][0], Cmol->mymol[i].xyz[j][1], Cmol->mymol[i].xyz[j][2]);
         		atom_count++;
         	}
         }
@@ -53,7 +53,7 @@ void Printer::write_pdb(Mol *Cmol, vector<vector<vector<double> > > xyz, double 
 //        				Cmol->mymol[i].resname.c_str(),  j+1, xyz[i][j][0], xyz[i][j][1], xyz[i][j][2]);
 #endif
         		gzprintf(outpdb, "ATOM   %4d %-3s  %3.3s  %4d    % 8.3f % 7.3f % 7.3f  0.00    0.00  1\n", atom_count, Cmol->mymol[i].atomnames[j].c_str(),
-        				Cmol->mymol[i].resname.c_str(),  j+1, xyz[i][j][0], xyz[i][j][1], xyz[i][j][2]);
+                        Cmol->mymol[i].resname.c_str(),  i+1, xyz[i][j][0], xyz[i][j][1], xyz[i][j][2]);
         		atom_count++;
         	}
         }
