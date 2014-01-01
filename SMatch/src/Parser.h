@@ -25,6 +25,7 @@ public:
 	double search_radius;
 	string multifile;
 	string output_prefix;
+    string directory;
 	bool write_pdb;
     int matching_residues;
 	Parser(char* arg);

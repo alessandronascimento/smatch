@@ -7,7 +7,8 @@
 
 #include "Mol.h"
 
-Mol::Mol() {
+Mol::Mol(Parser* _Input) {
+    Input = _Input;
 }
 
 bool Mol::read_pdb(string pdbin){
@@ -20,7 +21,7 @@ bool Mol::read_pdb(string pdbin){
 	}
 	else {
 
-		this->filename = pdbin;
+        this->filename = pdbin.substr(pdbin.size()-8, 8);
 
 		FILE* pdbfile;
 		char atom[10];
@@ -32,7 +33,7 @@ bool Mol::read_pdb(string pdbin){
 		int resnumber;
 		vector<double> ixyz;
 		float  occ, bf, x, y, z;
-		pdbfile = fopen(pdbin.c_str(), "r");
+        pdbfile = fopen((Input->directory + "/" + pdbin).c_str(), "r");
 
 		if (pdbfile != NULL){
 
@@ -107,9 +108,8 @@ bool Mol::read_pdb(string pdbin){
 
 bool Mol::read_gzpdb(string pdbin){
 	FILE* pdbfile;
-	pdbfile = popen(("zcat " + pdbin).c_str(), "r");
 
-	this->filename = pdbin;
+    this->filename = pdbin.substr(pdbin.size()-11, 11);
 	char atom[10];
 	char atomname[10];
 	char resname[10];
@@ -121,6 +121,8 @@ bool Mol::read_gzpdb(string pdbin){
 	float  occ, bf, x, y, z;
 	string atomtmp;
 	bool is_ok = true;
+
+    pdbfile = popen(("zcat " + Input->directory + "/" + pdbin).c_str(), "r");
 
 	if (pdbfile != NULL){
 

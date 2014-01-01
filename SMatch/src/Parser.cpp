@@ -12,6 +12,7 @@ Parser::Parser(char* arg) {
 	search_radius=5.0;
 	write_pdb = false;
     matching_residues = -1;
+    this->directory = "./";
 	ifstream input(arg);
 	char line[256];
 	while (!input.eof()){
@@ -57,6 +58,9 @@ void Parser::parse_param(string param, ifstream &input){
 	}
     else if (param == "matching_residues"){
         input >> this->matching_residues;
+    }
+    else if (param == "directory"){
+        input >> this->directory;
     }
 }
 
