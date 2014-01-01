@@ -55,8 +55,8 @@ vector<string> Engine::make_unique(vector<string> resnames){
 int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
 
 	for (unsigned i=0; i< pdb_list.size(); i++) {
-		Mol* M2 = new Mol;
-		Mol* MExtract2 = new Mol;
+        Mol* M2 = new Mol(Input);
+        Mol* MExtract2 = new Mol(Input);
 		if (M2->read_pdb(pdb_list[i])){
 			for (unsigned j=0; j< unique.size(); j++){
 				mol_extraction(M2, MExtract2, unique[j]);
@@ -115,7 +115,7 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 		multifile >> pdbmol;
 
 		while (!multifile.eof() and pdbmol != "EOF"){
-			pdb_list.push_back(pdbmol);
+            pdb_list.push_back(pdbmol);
 			multifile >> pdbmol;
 		}
 		multifile.close();
@@ -165,7 +165,7 @@ int Engine::run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* 
 	multifile >> pdbmol;
 
 	while (!multifile.eof() and pdbmol != "EOF"){
-		pdb_list.push_back(pdbmol);
+        pdb_list.push_back(pdbmol);
 		multifile >> pdbmol;
 	}
 	multifile.close();
@@ -182,8 +182,8 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
 	{
 #pragma omp for schedule(static, 1)
 		for (unsigned i=0; i< pdb_list.size(); i++) {
-			Mol* M2 = new Mol;
-			Mol* MExtract2 = new Mol;
+            Mol* M2 = new Mol(Input);
+            Mol* MExtract2 = new Mol(Input);
 			if (M2->read_pdb(pdb_list[i])){
 				for (unsigned j=0; j< unique.size(); j++){
 					mol_extraction(M2, MExtract2, unique[j]);

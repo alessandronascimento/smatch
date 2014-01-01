@@ -17,6 +17,7 @@
 #include <string>
 #include <string.h>
 #include <zlib.h>
+#include "Parser.h"
 
 using namespace std;
 
@@ -46,7 +47,8 @@ public:
 	void check_restype(Residue* Res, string resname);
 	char str[100];
 	string filename;
-	Mol();
+    Parser* Input;
+    Mol(Parser* _Input);
 	bool read_pdb(string pdbin);
 	bool read_gzpdb(string pdbin);
 	char residues_3_to_1_letter(string residue);

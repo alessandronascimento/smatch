@@ -28,10 +28,10 @@ int main(int argc, char* argv[]) {
     Writer->print_welcome();
 
 	Engine* RunEngine = new Engine;
-	Mol* M1 = new Mol;
-	M1->read_pdb(Input->reference_file);
+    Mol* M1 = new Mol(Input);
+    M1->read_pdb(Input->reference_file);
 
-	Mol* MExtract1 = new Mol;
+    Mol* MExtract1 = new Mol(Input);
 	RunEngine->mol_extraction(M1, MExtract1, Input);
     Writer->write_pdb(MExtract1, 0.0, 0.0, "ME1");
 
