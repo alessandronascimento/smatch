@@ -117,69 +117,95 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 	opt->set_min_objective(Optimization::pre_optimize_rmsd_function, odata);
 
 	double fo;
-	double rmsd_total, rmsd, optimal_rmsd;
+    double rmsd_total, rmsd=-1.0, optimal_rmsd;
 	vector<double> optimal_x=x;
 	int optimal_Nres=0;
 	optimal_rmsd=9999.0;
 
     for (unsigned i=0; i<M2->mymol.size(); i++){
         if (M2->mymol[i].resname == M1->mymol[0].resname){
-			x[0] = 0.0;
-			x[1] = 0.0;
-			x[2] = 0.0;
-			x[3] = 0.0;
-			x[4] = 0.0;
-			x[5] = 0.0;
-			odata->resnumber = int(i);
-			opt->optimize(x,fo);
+            x[0] = 0.0;
+            x[1] = 0.0;
+            x[2] = 0.0;
+            x[3] = 0.0;
+            x[4] = 0.0;
+            x[5] = 0.0;
+            odata->resnumber = int(i);
+            opt->optimize(x,fo);
             xyz = update_coords(x, M2);
-			rmsd_total = 0.00;
-			int nres_sol=0;
+            rmsd_total = 0.00;
+            int nres_sol=0;
             for (unsigned k=0; k< M1->mymol.size(); k++){
                 for (unsigned j=0; j<M2->mymol.size(); j++){
                     if (M1->mymol[k].resname == M2->mymol[j].resname){
-						rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
-                        if (rmsd <= Input->search_radius){
-							rmsd_total+= rmsd;
-							nres_sol++;
-                            smatched1.push_back(M1->mymol[k].resname);
-                            smatched2.push_back(M2->mymol[j].resname);
-                            imatched1.push_back(M1->mymol[k].resnumber);
-                            imatched2.push_back(M2->mymol[j].resnumber);
-                            rmsds.push_back(rmsd);
-						}
-					}
-				}
-			}
-
+                        rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
+                    }
+                    else {
+                        rmsd = this->compute_rmsd_non_similar(M1, M2, k, j);
+                    }
+                    if ((rmsd >= 0.0) and (rmsd <= Input->search_radius)){
+                        rmsd_total+= rmsd;
+                        nres_sol++;
+                        smatched1.push_back(M1->mymol[k].resname);
+                        smatched2.push_back(M2->mymol[j].resname);
+                        imatched1.push_back(M1->mymol[k].resnumber);
+                        imatched2.push_back(M2->mymol[j].resnumber);
+                        rmsds.push_back(rmsd);
+                    }
+                }
+            }
             if ((rmsd_total < optimal_rmsd) and (nres_sol >= nmatch)){
-				optimal_rmsd=rmsd_total;
-				optimal_x = x;
-				optimal_Nres=nres_sol;
+                optimal_rmsd=rmsd_total;
+                optimal_x = x;
+                optimal_Nres=nres_sol;
                 opt_result->imatched1 = imatched1;
                 opt_result->imatched2 = imatched2;
                 opt_result->smatched1 = smatched1;
                 opt_result->smatched2 = smatched2;
                 opt_result->rmsds = rmsds;
-			}
-		}
+            }
+        }
         imatched1.clear();
         imatched2.clear();
         smatched1.clear();
-        smatched1.clear();
+        smatched2.clear();
         rmsds.clear();
-	}
+    }
 
-	xyz = update_coords(optimal_x, M2);
+    xyz = update_coords(optimal_x, M2);
     if (optimal_rmsd < (2.0*nmatch*Input->search_radius)){
-		sprintf(info, "FILE = %-40.40s RMSD = %8.3f  N = %4d",M2->filename.c_str(), optimal_rmsd, optimal_Nres);
-		Writer->print_info(info);
+        sprintf(info, "FILE = %-40.40s RMSD = %8.3f  N = %4d",M2->filename.c_str(), optimal_rmsd, optimal_Nres);
+        Writer->print_info(info);
 
-		opt_result->rmsd = optimal_rmsd;
-		opt_result->xyz = xyz;
-		opt_result->rotrans = optimal_x;
-		opt_result->succeded = true;
-	}
-	delete opt;
-	delete odata;
+        opt_result->rmsd = optimal_rmsd;
+        opt_result->xyz = xyz;
+        opt_result->rotrans = optimal_x;
+        opt_result->succeded = true;
+    }
+    delete opt;
+    delete odata;
 }
+
+double Optimization::compute_rmsd_non_similar(Mol* M1, Mol* M2, int r1, int r2){
+    double rmsd=0.0;
+    int natom=0;
+    if ((M1->mymol[r1].is_acid and M2->mymol[r2].is_acid) or (M1->mymol[r1].is_basic and M2->mymol[r2].is_basic)){
+        for (unsigned i=0; i< M1[r1].xyz.size(); i++){
+            for (unsigned j=0; j < M2[r2].xyz.size(); j++){
+                if (M1->mymol[r1].atomnames[i] == M2->mymol[r2].atomnames[j]){
+                    rmsd += this->dist_squared(M1[r1].xyz[i][0], M2[r2].xyz[j][0], M1[r1].xyz[i][1], M2[r2].xyz[j][1], M1[r1].xyz[i][2], M2[r2].xyz[j][2]);
+                    natom++;
+                }
+            }
+        }
+    }
+    if (natom != 0){
+        rmsd = rmsd/natom;
+        rmsd = sqrt(rmsd);
+    }
+    else {
+        rmsd = -1.0;
+    }
+    return (rmsd);
+}
+

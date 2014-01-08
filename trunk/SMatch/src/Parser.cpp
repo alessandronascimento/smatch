@@ -32,6 +32,7 @@ void Parser::parse_param(string param, ifstream &input){
 	int res;
 	string resname;
 	string ch;
+    string lu;
 	if (param == "reference_file"){
 		input >> this->reference_file;
 	}
@@ -39,10 +40,12 @@ void Parser::parse_param(string param, ifstream &input){
 		input >> this->multifile;
 	}
 	else if (param == "search"){
-		input >> res >> ch >> resname;
+//        input >> res >> ch >> resname >> lu;
+        input >> res >> ch >> resname ;
 		this->selected_residues.push_back(res);
 		this->residue_types.push_back(resname);
 		this->chain.push_back(ch);
+//        this->lookup.push_back(lu);
 	}
 	else if (param == "search_radius"){
 		input >> this->search_radius;
