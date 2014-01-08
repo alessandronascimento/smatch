@@ -34,6 +34,7 @@ public:
 	virtual ~Optimization();
     static double compute_rmsd(Mol* M1, Mol* M2, vector<vector<vector<double> > >xyz, int r1, int r2);
 	void optimize_rmsd(Mol* M2, opt_result_t* opt_result);
+    double compute_rmsd_non_similar(Mol* M1, Mol* M2, int r1, int r2);
 	struct opt_data{
 		Mol* M2;
 		int resnumber;
