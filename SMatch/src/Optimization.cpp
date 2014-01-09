@@ -139,18 +139,19 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
                 for (unsigned j=0; j<M2->mymol.size(); j++){
                     if (M1->mymol[k].resname == M2->mymol[j].resname){
                         rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
-                    }
-                    else {
-                        rmsd = this->compute_rmsd_non_similar(M1, M2, k, j);
-                    }
-                    if ((rmsd >= 0.0) and (rmsd <= Input->search_radius)){
-                        rmsd_total+= rmsd;
-                        nres_sol++;
-                        smatched1.push_back(M1->mymol[k].resname);
-                        smatched2.push_back(M2->mymol[j].resname);
-                        imatched1.push_back(M1->mymol[k].resnumber);
-                        imatched2.push_back(M2->mymol[j].resnumber);
-                        rmsds.push_back(rmsd);
+//                    }
+//                    else {
+//                        rmsd = this->compute_rmsd_non_similar(M1, M2, k, j);
+//                    }
+                        if ((rmsd >= 0.0) and (rmsd <= Input->search_radius)){
+                            rmsd_total+= rmsd;
+                            nres_sol++;
+                            smatched1.push_back(M1->mymol[k].resname);
+                            smatched2.push_back(M2->mymol[j].resname);
+                            imatched1.push_back(M1->mymol[k].resnumber);
+                            imatched2.push_back(M2->mymol[j].resnumber);
+                            rmsds.push_back(rmsd);
+                        }
                     }
                 }
             }
