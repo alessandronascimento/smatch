@@ -15,6 +15,10 @@ Parser::Parser(char* arg) {
     this->directory = "./";
 	ifstream input(arg);
 	char line[256];
+    if (! input.is_open()){
+        printf("Could not open file %s. Please check.\n", arg);
+        exit(1);
+    }
 	while (!input.eof()){
 		input >> param;
 		if ((param.substr(0,1) == "#") or (param.substr(0,2) == "//")){
@@ -40,12 +44,12 @@ void Parser::parse_param(string param, ifstream &input){
 		input >> this->multifile;
 	}
 	else if (param == "search"){
-//        input >> res >> ch >> resname >> lu;
-        input >> res >> ch >> resname ;
+        input >> res >> ch >> resname >> lu;
+//        input >> res >> ch >> resname ;
 		this->selected_residues.push_back(res);
 		this->residue_types.push_back(resname);
 		this->chain.push_back(ch);
-//        this->lookup.push_back(lu);
+        this->lookup.push_back(lu);
 	}
 	else if (param == "search_radius"){
 		input >> this->search_radius;

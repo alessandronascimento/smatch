@@ -136,6 +136,8 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
             rmsd_total = 0.00;
             int nres_sol=0;
             for (unsigned k=0; k< M1->mymol.size(); k++){
+                cout << "Looking for " << M1->mymol[k].resname << " or " <<
+                        Input->lookup[k] << endl;
                 for (unsigned j=0; j<M2->mymol.size(); j++){
                     if (M1->mymol[k].resname == M2->mymol[j].resname){
                         rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
