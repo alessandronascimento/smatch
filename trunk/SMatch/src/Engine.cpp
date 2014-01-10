@@ -10,6 +10,13 @@
 Engine::Engine() {
 }
 
+void Engine::print_mol_info(Mol* M){
+	printf("Mol %12.12s has %d residues matching the criteria:\n", M->filename.c_str(), int(M->mymol.size()));
+	for (unsigned i=0; i< M->mymol.size(); i++){
+		printf("\t %3.3s %1.1s %4d\n", M->mymol[i].resname.c_str(), M->mymol[i].chain.c_str(), M->mymol[i].resnumber);
+	}
+}
+
 Engine::~Engine() {
 	printf("Quiting SMatch...\n");
 }
@@ -53,7 +60,7 @@ vector<string> Engine::make_unique(vector<string> resnames){
 }
 
 int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
-
+	this->print_mol_info(ME1);
 	for (unsigned i=0; i< pdb_list.size(); i++) {
         Mol* M2 = new Mol(Input);
         Mol* MExtract2 = new Mol(Input);
