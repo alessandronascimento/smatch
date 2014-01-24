@@ -70,6 +70,22 @@ double Optimization::pre_optimize_rmsd_function(const std::vector<double> &x, st
 	return(f);
 }
 
+double Optimization::post_optimize_rmsd_function(const std::vector<double> &x, std::vector<double> &grad, void *data){
+	opt_vector_data* odata = (opt_vector_data*) data;
+	Coord* Manip = new Coord;
+    vector<vector<vector<double> > >new_xyz;
+	double f=0.00;
+
+    new_xyz = Manip->rototranslate(odata->M2, x[0], x[1], x[2], x[3], x[4], x[5]);
+
+    for (unsigned i=0; i< odata->m1_residues.size(); i++){
+    	f+= Optimization::compute_rmsd_non_similar(M1, odata->M2, new_xyz, odata->m1_residues[i], odata->m2_residues[i]);
+    }
+
+	delete Manip;
+	return(f);
+}
+
 void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     int nmatch = Input->matching_residues;
     if ((nmatch < 1) or (nmatch > int(M1->mymol.size()))){
@@ -83,6 +99,7 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 	opt_result->succeded = false;
 
     vector<int> imatched1, imatched2;
+    vector<int> nmatched1, nmatched2;
     vector<string> smatched1, smatched2;
     vector<double> rmsds;
 
@@ -103,8 +120,8 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 
 	opt->set_lower_bounds(lb);
 	opt->set_upper_bounds(ub);
-	opt->set_xtol_rel(1.0E-10);
-	opt->set_maxtime(60);
+	opt->set_xtol_rel(1.0E-5);
+	opt->set_maxtime(20);
 
 	vector<double> x(6);
 	x[0] = 0.0;
@@ -151,6 +168,8 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     						smatched2.push_back(M2->mymol[j].resname);
     						imatched1.push_back(M1->mymol[k].resnumber);
     						imatched2.push_back(M2->mymol[j].resnumber);
+    						nmatched1.push_back(int(k));
+    						nmatched2.push_back(int(j));
     						rmsds.push_back(rmsd);
     					}
     				}
@@ -165,6 +184,24 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     			opt_result->smatched1 = smatched1;
     			opt_result->smatched2 = smatched2;
     			opt_result->rmsds = rmsds;
+
+    			nlopt::opt *opt2 = new nlopt::opt(nlopt::LN_NELDERMEAD,6);
+    			opt2->set_lower_bounds(lb);
+    			opt2->set_upper_bounds(ub);
+    			opt2->set_xtol_rel(1.0E-10);
+    			opt2->set_maxtime(60);
+    			opt_vector_data* odata2 = new opt_vector_data;
+    			odata2->m1_residues = nmatched1;
+    			odata2->m2_residues = nmatched2;
+    			odata2->M2 = M2;
+    			opt2->set_min_objective(Optimization::post_optimize_rmsd_function, odata2);
+    			opt2->optimize(x,fo);
+    			if (fo < optimal_rmsd){
+    				optimal_x = x;
+    				optimal_rmsd = fo;
+    			}
+    			delete opt2;
+    			delete odata2;
     		}
     	}
     	imatched1.clear();
@@ -199,7 +236,28 @@ double Optimization::compute_rmsd_non_similar(Mol* M1, Mol* M2, int r1, int r2){
 			}
 		}
 	}
-	if (natom != 0){
+	if (natom >= 4){
+		rmsd = rmsd/natom;
+		rmsd = sqrt(rmsd);
+	}
+	else {
+		rmsd = -1.0;
+	}
+	return (rmsd);
+}
+
+double Optimization::compute_rmsd_non_similar(Mol* M1, Mol* M2, vector<vector<vector<double> > > xyz, int r1, int r2){
+	double rmsd=0.0;
+	int natom=0;
+	for (unsigned i=0; i< M1->mymol[r1].xyz.size(); i++){
+		for (unsigned j=0; j < M2->mymol[r2].xyz.size(); j++){
+			if (M1->mymol[r1].atomnames[i] == M2->mymol[r2].atomnames[j]){
+				rmsd += Optimization::dist_squared(M1->mymol[r1].xyz[i][0], xyz[r2][j][0], M1->mymol[r1].xyz[i][1], xyz[r2][j][1], M1->mymol[r1].xyz[i][2], xyz[r2][j][2]);
+				natom++;
+			}
+		}
+	}
+	if (natom >= 4){
 		rmsd = rmsd/natom;
 		rmsd = sqrt(rmsd);
 	}
