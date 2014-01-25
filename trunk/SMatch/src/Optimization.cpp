@@ -150,9 +150,16 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     		odata->resnumber = int(i);
     		opt->optimize(x,fo);
     		xyz = update_coords(x, M2);
-    		rmsd_total = 0.00;
-    		int nres_sol=0;
-    		for (unsigned k=0; k< M1->mymol.size(); k++){
+            int nres_sol=1;
+            smatched1.push_back(M1->mymol[0].resname);
+            smatched2.push_back(M2->mymol[i].resname);
+            imatched1.push_back(M1->mymol[0].resnumber);
+            imatched2.push_back(M2->mymol[i].resnumber);
+            nmatched1.push_back(0);
+            nmatched2.push_back(int(i));
+            rmsds.push_back(fo);
+            rmsd_total = fo;
+            for (unsigned k=1; k< M1->mymol.size(); k++){
     			for (unsigned j=0; j<M2->mymol.size(); j++){
     				if (this->residues_match(M2->mymol[j].resname, Input->lookup[k])){
     					if ((M1->mymol[k].resname == M2->mymol[j].resname)){
