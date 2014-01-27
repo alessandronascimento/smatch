@@ -48,7 +48,7 @@ vector<string> Engine::make_unique(vector<string> resnames){
 	for (unsigned i=1; i<resnames.size(); i++){
 		found=false;
 		for (unsigned j=0; j< unique.size(); j++){
-			if (resnames[i] == unique[j]){
+            if ((resnames[i] == unique[j]) or (resnames[i]=="*")){
 				found = true;
 			}
 		}
@@ -60,7 +60,6 @@ vector<string> Engine::make_unique(vector<string> resnames){
 }
 
 int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
-	this->print_mol_info(ME1);
 	for (unsigned i=0; i< pdb_list.size(); i++) {
         Mol* M2 = new Mol(Input);
         Mol* MExtract2 = new Mol(Input);
@@ -115,6 +114,8 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 	vector<vector<string> > chuncks(world.size());
 
 	if (world.rank() == 0 ){
+        Writer->print_welcome();
+        this->print_mol_info(ME1);
 
 		ifstream multifile;
 		multifile.open(Input->multifile.c_str());
@@ -203,7 +204,8 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
 				vector<vector<vector<double> > >xyz;
                 Optimization* Opt = new Optimization(Writer, ME1, Input);
 				opt_result_t* opt_result = new opt_result_t;
-				Opt->optimize_rmsd(MExtract2, opt_result);
+//				Opt->optimize_rmsd(MExtract2, opt_result);
+                Opt->optimize_rmsd(M2, opt_result);
 
                 if (opt_result->succeded){
                     printf("\tMatched residues:\n");
@@ -231,4 +233,54 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
 		}
 	}
 	return EXIT_SUCCESS;
+}
+
+vector<string> Engine::check_resnames(vector<string> resnames){
+    vector<string> all_residues;
+    bool has_all = false;
+    bool has_acid = false;
+    bool has_basic = false;
+    for (unsigned i=0; i<resnames.size(); i++){
+        if (resnames[i] == "*"){
+            has_all = true;
+        }
+        else if (resnames[i] == "acid"){
+            has_acid = true;
+        }
+        else if (resnames[i] == "basic"){
+            has_basic = true;
+        }
+    }
+    if (has_all){
+        all_residues.push_back("ARG"); // 1
+        all_residues.push_back("LYS"); // 2
+        all_residues.push_back("HIS"); // 3
+        all_residues.push_back("ASP"); // 4
+        all_residues.push_back("GLU"); // 5
+        all_residues.push_back("SER"); // 6
+        all_residues.push_back("THR"); // 7
+        all_residues.push_back("ASN"); // 8
+        all_residues.push_back("GLN"); // 9
+        all_residues.push_back("CYS"); // 10
+        all_residues.push_back("GLY");
+        all_residues.push_back("PRO");
+        all_residues.push_back("ALA");
+        all_residues.push_back("VAL");
+        all_residues.push_back("ILE"); // 15
+        all_residues.push_back("LEU");
+        all_residues.push_back("MET");
+        all_residues.push_back("PHE");
+        all_residues.push_back("TYR");
+        all_residues.push_back("TRP"); // 20
+    }
+    if (has_acid){
+        all_residues.push_back("ASP"); // 4
+        all_residues.push_back("GLU");
+    }
+    if (has_basic){
+        all_residues.push_back("ARG"); // 1
+        all_residues.push_back("LYS");
+    }
+
+    return (all_residues);
 }
