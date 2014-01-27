@@ -33,6 +33,7 @@ public:
 	int run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer);
 	int serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list);
 	void print_mol_info(Mol* M);
+    vector<string> check_resnames(vector<string> resnames);
 #ifdef HAS_MPI
     int run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer);
 #endif
