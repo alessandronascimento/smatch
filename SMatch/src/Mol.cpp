@@ -293,7 +293,7 @@ void Mol::check_restype(Residue* Res, string resname){
 	else {
 		Res->is_basic = false;
 	}
-	if (resname == "ALA" or resname == "GLY" or resname == "VAL" or resname == "LEU" or resname == "ILE" or resname == "PHE"){
+	if (resname == "ALA" or resname == "GLY" or resname == "VAL" or resname == "LEU" or resname == "ILE" or resname == "PHE" or resname == "PRO"){
 		Res->is_apolar = true;
 	}
 	else {

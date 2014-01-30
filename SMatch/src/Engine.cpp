@@ -34,8 +34,63 @@ void Engine::mol_extraction(Mol* M1, Mol* MExtract1, Parser* Input){
 
 void Engine::mol_extraction(Mol* M1, Mol* MExtract1, string resname){
 	for (unsigned i=0; i<M1->mymol.size(); i++){
-		if (M1->mymol[i].resname == resname){
+		if (this->residues_match(M1->mymol[i].resname, resname)){
 			MExtract1->mymol.push_back(M1->mymol[i]);
+		}
+	}
+	MExtract1->filename = M1->filename;
+}
+
+void Engine::mol_extraction(Mol* M1, Mol* MExtract1, vector<string> resnames){
+	bool has_acid=false, has_basic=false, has_polar=false, has_all=false;
+	for (unsigned i=0; i<resnames.size(); i++){
+		if (resnames[i] == "*"){
+			has_all = true;
+		}
+		else if (resnames[i] == "acid"){
+			has_acid = true;
+		}
+		else if (resnames[i] == "basic"){
+			has_basic = true;
+		}
+		else if (resnames[i] == "polar"){
+			has_polar = true;
+		}
+	}
+
+	if (has_acid){
+		for (unsigned i=0; i< M1->mymol.size(); i++){
+			if (M1->mymol[i].is_acid){
+				MExtract1->mymol.push_back(M1->mymol[i]);
+			}
+		}
+	}
+
+	if (has_all){
+		for (unsigned i=0; i< M1->mymol.size(); i++){
+			MExtract1->mymol.push_back(M1->mymol[i]);
+		}
+	}
+
+	else if (has_basic){
+		for (unsigned i=0; i< M1->mymol.size(); i++){
+			if (M1->mymol[i].is_basic){
+				MExtract1->mymol.push_back(M1->mymol[i]);
+			}
+		}
+	}
+
+	else if (has_polar){
+		for (unsigned i=0; i< M1->mymol.size(); i++){
+			if (!M1->mymol[i].is_apolar and !M1->mymol[i].is_acid and !M1->mymol[i].is_basic){
+				MExtract1->mymol.push_back(M1->mymol[i]);
+			}
+		}
+	}
+
+	if (!has_acid and !has_basic and !has_polar and !has_all){
+		for (unsigned j=0; j<resnames.size(); j++){
+			this->mol_extraction(M1, MExtract1, resnames[j]);
 		}
 	}
 	MExtract1->filename = M1->filename;
@@ -48,7 +103,7 @@ vector<string> Engine::make_unique(vector<string> resnames){
 	for (unsigned i=1; i<resnames.size(); i++){
 		found=false;
 		for (unsigned j=0; j< unique.size(); j++){
-            if ((resnames[i] == unique[j]) or (resnames[i]=="*")){
+            if ((resnames[i] == unique[j])){
 				found = true;
 			}
 		}
@@ -64,13 +119,15 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
         Mol* M2 = new Mol(Input);
         Mol* MExtract2 = new Mol(Input);
 		if (M2->read_pdb(pdb_list[i])){
-			for (unsigned j=0; j< unique.size(); j++){
-				mol_extraction(M2, MExtract2, unique[j]);
+			this->mol_extraction(M2, MExtract2, unique);
+
+			if (Input->verbose){
+				printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
+				for (unsigned a=0; a<MExtract2->mymol.size(); a++){
+					printf("\t\t%s%d\n", MExtract2->mymol[a].resname.c_str(), MExtract2->mymol[a].resnumber);
+				}
 			}
 
-#ifdef DEBUG
-			printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
-#endif
 
 			vector<vector<vector<double> > >xyz;
             Optimization* Opt = new Optimization(Writer, ME1, Input);
@@ -193,19 +250,17 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
             Mol* M2 = new Mol(Input);
             Mol* MExtract2 = new Mol(Input);
 			if (M2->read_pdb(pdb_list[i])){
-				for (unsigned j=0; j< unique.size(); j++){
-					mol_extraction(M2, MExtract2, unique[j]);
-				}
+				this->mol_extraction(M2, MExtract2, unique);
 
-#ifdef DEBUG
-				printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
-#endif
+//				if (Input->verbose){
+					printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
+//				}
 
 				vector<vector<vector<double> > >xyz;
                 Optimization* Opt = new Optimization(Writer, ME1, Input);
 				opt_result_t* opt_result = new opt_result_t;
-//				Opt->optimize_rmsd(MExtract2, opt_result);
-                Opt->optimize_rmsd(M2, opt_result);
+				Opt->optimize_rmsd(MExtract2, opt_result);
+//                Opt->optimize_rmsd(M2, opt_result);
 
                 if (opt_result->succeded){
                     printf("\tMatched residues:\n");
@@ -235,52 +290,23 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
 	return EXIT_SUCCESS;
 }
 
-vector<string> Engine::check_resnames(vector<string> resnames){
-    vector<string> all_residues;
-    bool has_all = false;
-    bool has_acid = false;
-    bool has_basic = false;
-    for (unsigned i=0; i<resnames.size(); i++){
-        if (resnames[i] == "*"){
-            has_all = true;
-        }
-        else if (resnames[i] == "acid"){
-            has_acid = true;
-        }
-        else if (resnames[i] == "basic"){
-            has_basic = true;
-        }
-    }
-    if (has_all){
-        all_residues.push_back("ARG"); // 1
-        all_residues.push_back("LYS"); // 2
-        all_residues.push_back("HIS"); // 3
-        all_residues.push_back("ASP"); // 4
-        all_residues.push_back("GLU"); // 5
-        all_residues.push_back("SER"); // 6
-        all_residues.push_back("THR"); // 7
-        all_residues.push_back("ASN"); // 8
-        all_residues.push_back("GLN"); // 9
-        all_residues.push_back("CYS"); // 10
-        all_residues.push_back("GLY");
-        all_residues.push_back("PRO");
-        all_residues.push_back("ALA");
-        all_residues.push_back("VAL");
-        all_residues.push_back("ILE"); // 15
-        all_residues.push_back("LEU");
-        all_residues.push_back("MET");
-        all_residues.push_back("PHE");
-        all_residues.push_back("TYR");
-        all_residues.push_back("TRP"); // 20
-    }
-    if (has_acid){
-        all_residues.push_back("ASP"); // 4
-        all_residues.push_back("GLU");
-    }
-    if (has_basic){
-        all_residues.push_back("ARG"); // 1
-        all_residues.push_back("LYS");
-    }
+bool Engine::residues_match(string r1, string r2){
+	bool result = false;
 
-    return (all_residues);
+	if (r1 == r2){
+		result = true;
+	}
+
+	else if (r2 == "acid" and ((r1 == "ASP") or (r1 == "GLU"))){
+		result = true;
+	}
+
+	else if (r2 == "basic" and ((r1 == "LYS") or (r1 == "ARG"))){
+		result = true;
+	}
+
+	else if (r2 == "*"){
+		result = true;
+	}
+	return result;
 }

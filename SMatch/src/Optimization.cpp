@@ -10,7 +10,6 @@
 Optimization::Optimization(Printer* _Writer, Mol* _M1) {
 	M1 = _M1;
 	Writer = _Writer;
-
 }
 
 Optimization::Optimization(Printer* _Writer, Mol* _M1, Parser* _Input) {
@@ -77,7 +76,6 @@ double Optimization::post_optimize_rmsd_function(const std::vector<double> &x, s
 	double f=0.00;
 
     new_xyz = Manip->rototranslate(odata->M2, x[0], x[1], x[2], x[3], x[4], x[5]);
-
     for (unsigned i=0; i< odata->m1_residues.size(); i++){
     	f+= Optimization::compute_rmsd_non_similar(M1, odata->M2, new_xyz, odata->m1_residues[i], odata->m2_residues[i]);
     }
@@ -150,7 +148,9 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     		odata->resnumber = int(i);
     		opt->optimize(x,fo);
     		xyz = update_coords(x, M2);
-            int nres_sol=1;
+
+    		int nres_sol=1;
+
             smatched1.push_back(M1->mymol[0].resname);
             smatched2.push_back(M2->mymol[i].resname);
             imatched1.push_back(M1->mymol[0].resnumber);
@@ -158,7 +158,9 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
             nmatched1.push_back(0);
             nmatched2.push_back(int(i));
             rmsds.push_back(fo);
+
             rmsd_total = fo;
+
             int r1, r2;
 
             for (unsigned k=1; k< M1->mymol.size(); k++){
@@ -197,16 +199,21 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     			}
     		}
 
-            if (nres_sol >= nmatch){
+/*
+ * Verbose
+ */
+            if ((Input->verbose) and (nres_sol >= nmatch)){
             	printf("Matched residues for global optimization:\n");
-            	for (int a=0; a<imatched1.size(); a++){
+            	for (unsigned a=0; a<imatched1.size(); a++){
             		printf("\t\t%s%d(%d) --> %s%d(%d)\n", smatched1[a].c_str(), imatched1[a], nmatched1[a],
             				smatched2[a].c_str(), imatched2[a], nmatched2[a]);
             	}
             	printf("RMSD_TOTAL = %.4f\n", rmsd_total);
             }
 
-
+/*
+ * End of verbose
+ */
 
     		if ((rmsd_total < optimal_rmsd) and (nres_sol >= nmatch)){
     			optimal_rmsd=rmsd_total;
@@ -229,11 +236,9 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     			odata2->M2 = M2;
     			opt2->set_min_objective(Optimization::post_optimize_rmsd_function, odata2);
     			opt2->optimize(x,fo);
-    			printf("fo = %.4f\n", fo);
-    			if (fo <= optimal_rmsd){
+    			if (fo < optimal_rmsd){
     				optimal_x = x;
     				optimal_rmsd = fo;
-    				printf("fo = %.4f [%.2f %.2f %.2f %.2f %.2f %.2f]\n", fo, x[0], x[1], x[2], x[3], x[4], x[5]);
     			}
     			delete opt2;
     			delete odata2;
@@ -243,12 +248,13 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     	imatched2.clear();
     	smatched1.clear();
     	smatched2.clear();
+    	nmatched1.clear();
+    	nmatched2.clear();
     	rmsds.clear();
     }
 
     xyz = update_coords(optimal_x, M2);
     if (optimal_rmsd < (2.0*nmatch*Input->search_radius)){
-    	printf("RMSD = %.4f [%.2f %.2f %.2f %.2f %.2f %.2f]\n", optimal_rmsd, optimal_x[0], optimal_x[1], optimal_x[2], optimal_x[3], optimal_x[4], optimal_x[5]);
     	sprintf(info, "FILE = %-40.40s RMSD = %8.3f  N = %4d",M2->filename.c_str(), optimal_rmsd, optimal_Nres);
     	Writer->print_info(info);
 
@@ -285,8 +291,6 @@ double Optimization::compute_rmsd_non_similar(Mol* M1, Mol* M2, int r1, int r2){
 double Optimization::compute_rmsd_non_similar(Mol* M1, Mol* M2, vector<vector<vector<double> > > xyz, int r1, int r2){
 	double rmsd=0.0;
 	int natom=0;
-
-	printf("Computing RMSD for residues %s%d and %s%d\n", M1->mymol[r1].resname.c_str(), M1->mymol[r1].resnumber,M2->mymol[r2].resname.c_str(), M2->mymol[r2].resnumber);
 
 	for (unsigned i=0; i< M1->mymol[r1].xyz.size(); i++){
 		for (unsigned j=0; j < M2->mymol[r2].xyz.size(); j++){
