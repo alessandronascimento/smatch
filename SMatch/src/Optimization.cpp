@@ -118,7 +118,7 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 
 	opt->set_lower_bounds(lb);
 	opt->set_upper_bounds(ub);
-	opt->set_xtol_rel(1.0E-5);
+	opt->set_xtol_rel(1.0E-3);
 	opt->set_maxtime(20);
 
 	vector<double> x(6);
@@ -228,7 +228,7 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     			nlopt::opt *opt2 = new nlopt::opt(nlopt::LN_NELDERMEAD,6);
     			opt2->set_lower_bounds(lb);
     			opt2->set_upper_bounds(ub);
-    			opt2->set_xtol_rel(1.0E-10);
+    			opt2->set_xtol_rel(1.0E-4);
     			opt2->set_maxtime(60);
     			opt_vector_data* odata2 = new opt_vector_data;
     			odata2->m1_residues = nmatched1;
