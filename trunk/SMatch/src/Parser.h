@@ -29,6 +29,7 @@ public:
 	string output_prefix;
     string directory;
 	bool write_pdb;
+	bool verbose;
     int matching_residues;
 	Parser(char* arg);
 	virtual ~Parser();

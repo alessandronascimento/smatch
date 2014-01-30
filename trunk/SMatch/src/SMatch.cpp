@@ -35,9 +35,7 @@ int main(int argc, char* argv[]) {
 	RunEngine->mol_extraction(M1, MExtract1, Input);
     Writer->write_pdb(MExtract1, 0.0, 0.0, "ME1");
 
-	vector<string> unique = RunEngine->make_unique(Input->residue_types);
-
-
+	vector<string> unique = RunEngine->make_unique(Input->lookup);
 
 #ifdef HAS_MPI
 	RunEngine->run_over_mpi(argc, argv, MExtract1, unique, Input, Writer);

@@ -11,6 +11,7 @@
 Parser::Parser(char* arg) {
 	search_radius=5.0;
 	write_pdb = false;
+	verbose = false;
     matching_residues = -1;
     this->directory = "./";
 	ifstream input(arg);
@@ -45,7 +46,6 @@ void Parser::parse_param(string param, ifstream &input){
 	}
 	else if (param == "search"){
         input >> res >> ch >> resname >> lu;
-//        input >> res >> ch >> resname ;
 		this->selected_residues.push_back(res);
 		this->residue_types.push_back(resname);
 		this->chain.push_back(ch);
@@ -68,6 +68,12 @@ void Parser::parse_param(string param, ifstream &input){
     }
     else if (param == "directory"){
         input >> this->directory;
+    }
+    else if (param == "verbose"){
+    	input >> lu;
+    	if ((lu == "yes") or (lu == "YES") or (lu == "Yes")){
+    		this->verbose = true;
+    	}
     }
 }
 
