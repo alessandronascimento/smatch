@@ -170,7 +170,6 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     				if (this->residues_match(M2->mymol[j].resname, Input->lookup[k])){
     					if ((M1->mymol[k].resname == M2->mymol[j].resname)){
     						rmsd = this->compute_rmsd(M1, M2, xyz, k, j);
-
    							if (rmsd < best_rmsd){
    								best_rmsd = rmsd;
     							r2 = int(j);
