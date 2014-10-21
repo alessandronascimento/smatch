@@ -143,15 +143,19 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
             }
 
             else {
-                printf("No matched results for %-15.15s\n", MExtract2->filename.c_str());
+                if (Input->verbose){
+                    printf("No matched results for %-15.15s\n", MExtract2->filename.c_str());
+                }
             }
 
-			if (opt_result->succeded and Input->write_pdb){
-//				Coord* CoordManip = new Coord;
-//				xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
-//						opt_result->rotrans[4], opt_result->rotrans[5]);
-//				delete CoordManip;
-				Writer->write_pdb(MExtract2, opt_result->xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
+            if (opt_result->succeded && Input->write_pdb){
+                Coord* CoordManip = new Coord;
+                xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
+                        opt_result->rotrans[4], opt_result->rotrans[5]);
+                delete CoordManip;
+//                Writer->write_pdb(MExtract2, opt_result->xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
+                printf("Writting pdb %s ....\n", (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch").c_str());
+                Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
 			}
 			delete Opt;
 			delete opt_result;

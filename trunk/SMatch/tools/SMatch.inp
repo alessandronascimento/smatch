@@ -1,8 +1,9 @@
-reference_file          1CEL.pdb
+reference_file          1CEL.pdb.gz
 multifile		INSMATCH
-search			212     A   GLU
-search			214     A   ASP
-search			217	A   GLU
+search			212     GLU	A   GLU
+search			214     ASP	A   ASP
+search			217	GLU	A   GLU
 search_radius		5.0
 output_prefix		SMatch
 write_pdb               no
+verbose 		yes
