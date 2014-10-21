@@ -7,3 +7,4 @@ search_radius		5.0
 output_prefix		SMatch
 write_pdb               no
 verbose 		yes
+parallel_jobs           3

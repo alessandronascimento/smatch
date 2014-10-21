@@ -1,0 +1,11 @@
+CXX =		icpc
+CXXFLAGS =	-Ofast -Wall -I/usr/local/boost/include -I/usr/local/mpich2/include -IC:/ASN/libs/nlopt/include -IC:/ASN/libs/boost/include -fopenmp #-DHAS_MPI
+OBJS =		SMatch.o Mol.o Parser.o Printer.o Optimization.o Coord.o Engine.o
+LIBS =		-LC:/ASN/libs/nlopt/lib -L/usr/local/boost/lib -lnlopt_cxx -LC:/ASN/libs/zlib -lz -liomp5 -lpthread -static #-lboost_mpi -lboost_serialization
+TARGET =	../build/SMatch
+$(TARGET):	$(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)
+all:	$(TARGET)
+
+clean:
+	rm $(OBJS) $(TARGET)

@@ -12,3 +12,11 @@ src/Printer.cpp
 src/Printer.h
 src/SMatch.cpp
 src/SMatch.h
+src/Makefile.mpi
+src/Makefile.openmp
+tools/1CEL.pdb.gz
+tools/3EXD.pdb.gz
+tools/INSMATCH
+tools/ME1.pdb.gz
+tools/SMatch.inp
+tools/SMatch.sub
