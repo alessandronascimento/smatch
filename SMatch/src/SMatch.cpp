@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 	Parser* Input = new Parser(argv[1]);
     Printer* Writer = new Printer(Input);
 
-//    Writer->print_welcome();
+    Writer->print_welcome();
 
 	Engine* RunEngine = new Engine;
     Mol* M1 = new Mol(Input);

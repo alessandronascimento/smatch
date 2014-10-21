@@ -25,6 +25,7 @@ public:
 	virtual ~Printer();
 	void print_info(char info[98]);
     void print_welcome(void);
+    void print_params(Parser* Input);
 };
 
 #endif /* PRINTER_H_ */
