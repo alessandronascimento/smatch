@@ -153,8 +153,9 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
                 xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
                         opt_result->rotrans[4], opt_result->rotrans[5]);
                 delete CoordManip;
-//                Writer->write_pdb(MExtract2, opt_result->xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
-                printf("Writting pdb %s ....\n", (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch").c_str());
+                if (Input->verbose){
+                    printf("Writting pdb %s ....\n", (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch").c_str());
+                }
                 Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
 			}
 			delete Opt;
@@ -247,7 +248,8 @@ int Engine::run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* 
 
 int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
 
-#pragma omp parallel
+#pragma omp parallel num_threads(Input->parallel_jobs)
+
 	{
 #pragma omp for schedule(static, 1)
 		for (unsigned i=0; i< pdb_list.size(); i++) {
@@ -256,9 +258,9 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
 			if (M2->read_pdb(pdb_list[i])){
 				this->mol_extraction(M2, MExtract2, unique);
 
-//				if (Input->verbose){
+                if (Input->verbose){
 					printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
-//				}
+                }
 
 				vector<vector<vector<double> > >xyz;
                 Optimization* Opt = new Optimization(Writer, ME1, Input);

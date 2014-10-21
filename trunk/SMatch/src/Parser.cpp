@@ -75,6 +75,9 @@ void Parser::parse_param(string param, ifstream &input){
     		this->verbose = true;
     	}
     }
+    else if ( param == "parallel_jobs"){
+        input >> this->parallel_jobs;
+    }
 }
 
 Parser::~Parser() {

@@ -31,6 +31,7 @@ public:
 	bool write_pdb;
 	bool verbose;
     int matching_residues;
+    int parallel_jobs;
 	Parser(char* arg);
 	virtual ~Parser();
 	void parse_param(string param, ifstream &input);
