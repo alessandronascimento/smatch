@@ -8,4 +8,4 @@ $(TARGET):	$(OBJS)
 all:	$(TARGET)
 
 clean:
-	rm $(OBJS) $(TARGET)
+	rm $(OBJS)
