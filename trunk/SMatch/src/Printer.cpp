@@ -72,11 +72,11 @@ void Printer::print_welcome(void){
 
 void Printer::print_params(Parser* Input){
     printf("****************************************************************************\n");
-    printf("* %20.20s               %30.30s*\n", "reference_file", Input->reference_file.c_str());
-    printf("* %20.20s               %30f*\n", "search radius", Input->search_radius);
-    printf("* %20.20s               %30.30s*\n", "output_prefix", Input->output_prefix.c_str());
-    printf("* %20.20s               %30d*\n", "write_pdb", Input->write_pdb);
-    printf("* %20.20s               %30d*\n", "matching_residues", Input->matching_residues);
-    printf("* %20.20s               %30.30s*\n", "directory", Input->directory.c_str());
+    printf("* %20.20s               %38.38s*\n", "reference_file", Input->reference_file.c_str());
+    printf("* %20.20s               %38f*\n", "search radius", Input->search_radius);
+    printf("* %20.20s               %38.38s*\n", "output_prefix", Input->output_prefix.c_str());
+    printf("* %20.20s               %38d*\n", "write_pdb", Input->write_pdb);
+    printf("* %20.20s               %38d*\n", "matching_residues", Input->matching_residues);
+    printf("* %20.20s               %38.38s*\n", "directory", Input->directory.c_str());
     printf("****************************************************************************\n");
 }

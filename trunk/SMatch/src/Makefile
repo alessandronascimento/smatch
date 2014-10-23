@@ -1,11 +1,5 @@
-CXX =		/usr/local/mpich2_intel/bin/mpicxx
-CXXFLAGS =	-DHAS_MPI -Ofast -Wall -I/usr/local/boost/include -I/usr/local/mpich2/include -IC:/ASN/libs/nlopt/include -IC:/ASN/libs/boost/include #-fopenmp
-OBJS =		SMatch.o Mol.o Parser.o Printer.o Optimization.o Coord.o Engine.o
-LIBS =		-LC:/ASN/libs/nlopt/lib -L/usr/local/boost/lib -lnlopt_cxx -LC:/ASN/libs/zlib -lz -static -lboost_mpi -lboost_serialization #-lgomp
-TARGET =	../build/SMatch
-$(TARGET):	$(OBJS)
-	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)
-all:	$(TARGET)
+all:	
+	make -f Makefile.openmp; make -f Makefile.openmp clean; make -f Makefile.mpi
 
 clean:
-	rm $(OBJS) $(TARGET)
+	make -f Makefile.openmp clean;
