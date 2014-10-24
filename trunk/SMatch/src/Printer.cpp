@@ -13,6 +13,7 @@ Printer::Printer() {
 
 Printer::Printer(Parser* Input){
 	logfile = fopen((Input->output_prefix + ".log").c_str(), "w");
+    this->print_welcome();
     this->print_params(Input);
 }
 
@@ -55,8 +56,8 @@ void Printer::write_pdb(Mol *Cmol, vector<vector<vector<double> > > xyz, double 
 }
 
 void Printer::print_info(char info[98]){
-	fprintf(logfile, "%-98s\n", info);
-	printf("%s\n", info);
+    fprintf(logfile, "*%-98s*\n", info);
+    printf("*%-74.74s*\n", info);
 }
 
 void Printer::print_welcome(void){
