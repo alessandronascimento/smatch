@@ -37,7 +37,7 @@ bool Mol::read_pdb(string pdbin){
 
 		if (pdbfile != NULL){
 
-			while (string(str).substr(0,4) != "ATOM"){ 	//ignoring header
+            while (string(str).substr(0,4) != "ATOM" and !feof(pdbfile)){ 	//ignoring header
 				fgets(str, 80, pdbfile);
 			}
 			int old_res;
@@ -126,7 +126,7 @@ bool Mol::read_gzpdb(string pdbin){
 
 	if (pdbfile != NULL){
 
-		while (string(str).substr(0,4) != "ATOM"){ 	//ignoring header
+        while (string(str).substr(0,4) != "ATOM" and !feof(pdbfile)){ 	//ignoring header
 			fgets(str, 80, pdbfile);
 		}
 
@@ -181,9 +181,9 @@ bool Mol::read_gzpdb(string pdbin){
 		}
 		mymol.push_back(*Res);
 
-#ifdef DEBUG
-		printf("The molecule has %d residues\n", int(mymol.size()));
-#endif
+        if (Input->verbose){
+            printf("The molecule has %d residues\n", int(mymol.size()));
+        }
 
 	pclose(pdbfile);
 	}

@@ -9,13 +9,16 @@
 
 
 Parser::Parser(char* arg) {
-	search_radius=5.0;
+
+    search_radius=5.0;
 	write_pdb = false;
 	verbose = false;
     matching_residues = -1;
+    this->parallel_jobs = 1;
     this->directory = "./";
 	ifstream input(arg);
 	char line[256];
+
     if (! input.is_open()){
         printf("Could not open file %s. Please check.\n", arg);
         exit(1);

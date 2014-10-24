@@ -7,18 +7,23 @@
 
 #include "Engine.h"
 
-Engine::Engine() {
+Engine::Engine(Printer* _Writer) {
+    this->Writer = _Writer;
 }
 
+
 void Engine::print_mol_info(Mol* M){
-	printf("Mol %12.12s has %d residues matching the criteria:\n", M->filename.c_str(), int(M->mymol.size()));
+    sprintf(info, "Mol %12.12s has %d residues matching the criteria:", M->filename.c_str(), int(M->mymol.size()));
+    Writer->print_info(info);
 	for (unsigned i=0; i< M->mymol.size(); i++){
-		printf("\t %3.3s %1.1s %4d\n", M->mymol[i].resname.c_str(), M->mymol[i].chain.c_str(), M->mymol[i].resnumber);
+        sprintf(info, "\t %3.3s %1.1s %4d", M->mymol[i].resname.c_str(), M->mymol[i].chain.c_str(), M->mymol[i].resnumber);
+        Writer->print_info(info);
 	}
 }
 
 Engine::~Engine() {
-	printf("Quiting SMatch...\n");
+    sprintf(info, "Quiting SMatch...");
+    Writer->print_info(info);
 }
 
 void Engine::mol_extraction(Mol* M1, Mol* MExtract1, Parser* Input){
@@ -114,7 +119,7 @@ vector<string> Engine::make_unique(vector<string> resnames){
 	return(unique);
 }
 
-int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
+int Engine::serial_search(Mol* ME1, Parser* Input, vector<string> unique, vector<string> pdb_list) {
 	for (unsigned i=0; i< pdb_list.size(); i++) {
         Mol* M2 = new Mol(Input);
         Mol* MExtract2 = new Mol(Input);
@@ -122,9 +127,11 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 			this->mol_extraction(M2, MExtract2, unique);
 
 			if (Input->verbose){
-				printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
+                sprintf(info, "Found %d matching residues in search molecule.", int(MExtract2->mymol.size()));
+                Writer->print_info(info);
 				for (unsigned a=0; a<MExtract2->mymol.size(); a++){
-					printf("\t\t%s%d\n", MExtract2->mymol[a].resname.c_str(), MExtract2->mymol[a].resnumber);
+                    sprintf(info, "\t\t%s%d", MExtract2->mymol[a].resname.c_str(), MExtract2->mymol[a].resnumber);
+                    Writer->print_info(info);
 				}
 			}
 
@@ -132,19 +139,24 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 			vector<vector<vector<double> > >xyz;
             Optimization* Opt = new Optimization(Writer, ME1, Input);
 			opt_result_t* opt_result = new opt_result_t;
-			Opt->optimize_rmsd(MExtract2, opt_result);
+            opt_result->succeded = false;
+            if (MExtract2->mymol.size() > 0){
+                Opt->optimize_rmsd(MExtract2, opt_result);
+            }
 
             if (opt_result->succeded){
-                printf("\tMatched residues:\n");
+                sprintf(info, "\tMatched residues:");
+                Writer->print_info(info);
                 for (unsigned a=0; a< opt_result->imatched1.size(); a++){
-                    printf("\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f\n", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
+                    sprintf(info, "\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
                            MExtract2->filename.c_str(), opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
+                    Writer->print_info(info);
                 }
             }
 
             else {
                 if (Input->verbose){
-                    printf("No matched results for %-15.15s\n", MExtract2->filename.c_str());
+                    printf("No matched results for %-15.15s", MExtract2->filename.c_str());
                 }
             }
 
@@ -154,7 +166,8 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
                         opt_result->rotrans[4], opt_result->rotrans[5]);
                 delete CoordManip;
                 if (Input->verbose){
-                    printf("Writting pdb %s ....\n", (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch").c_str());
+                    sprintf(info, "Writting pdb %s ....", (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch").c_str());
+                    Writer->print_info(info);
                 }
                 Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
 			}
@@ -168,7 +181,7 @@ int Engine::serial_search(Mol* ME1, Printer* Writer, Parser* Input, vector<strin
 }
 
 #ifdef HAS_MPI
-int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer){
+int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique, Parser* Input){
 	mpi::environment env(argc, argv);
 	mpi::communicator world;
 	vector<string> pdb_list;
@@ -192,7 +205,10 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 
 		int chunck_size = int(pdb_list.size()/world.size());
 
-//		printf("There are %d files, divided into %d chuncks of size %d.\n", int(pdb_list.size()), world.size(), chunck_size);
+        if (Input->verbose){
+            sprintf(info, "There are %d files, divided into %d chuncks of size %d.", int(pdb_list.size()), world.size(), chunck_size);
+            Writer->print_info(info);
+        }
 
 		for (int i=0; i< world.size(); i++){
 			tmp.clear();
@@ -210,11 +226,12 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 			chuncks[i].push_back(pdb_list[i]);
 		}
 
-#ifdef DEBUG
-		for (unsigned i=0; i< chuncks.size(); i++){
-			printf("Chuncks[%d] has %d elements.\n", int(i), int(chuncks[i].size()));
-		}
-#endif
+        if (Input->verbose){
+            for (unsigned i=0; i< chuncks.size(); i++){
+                sprintf(info, "Chuncks[%d] has %d elements.", int(i), int(chuncks[i].size()));
+                Writer->print_info(info);
+            }
+        }
 
 		scatter(world, chuncks, tmp,0);
 		serial_search(ME1, Writer, Input, unique, tmp);
@@ -227,7 +244,7 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
 }
 #endif
 
-int Engine::run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* Writer){
+int Engine::run_serial(Mol* ME1, vector<string> unique, Parser* Input){
 	vector<string> pdb_list;
 	ifstream multifile;
 	multifile.open(Input->multifile.c_str());
@@ -240,13 +257,13 @@ int Engine::run_serial(Mol* ME1, vector<string> unique, Parser* Input, Printer* 
 	}
 	multifile.close();
 
-	this->serial_search_omp(ME1, Writer, Input, unique, pdb_list);
+    this->serial_search_omp(ME1, Input, unique, pdb_list);
 
 	return 0;
 
 }
 
-int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<string> unique, vector<string> pdb_list) {
+int Engine::serial_search_omp(Mol* ME1, Parser* Input, vector<string> unique, vector<string> pdb_list) {
 
 #pragma omp parallel num_threads(Input->parallel_jobs)
 
@@ -259,24 +276,33 @@ int Engine::serial_search_omp(Mol* ME1, Printer* Writer, Parser* Input, vector<s
 				this->mol_extraction(M2, MExtract2, unique);
 
                 if (Input->verbose){
-					printf("Found %d matching residues in search molecule.\n", int(MExtract2->mymol.size()));
+                    sprintf(info, "Found %d matching residues in search molecule.", int(MExtract2->mymol.size()));
+                    Writer->print_info(info);
                 }
 
 				vector<vector<vector<double> > >xyz;
+                opt_result_t* opt_result = new opt_result_t;
+                opt_result->succeded = false;
                 Optimization* Opt = new Optimization(Writer, ME1, Input);
-				opt_result_t* opt_result = new opt_result_t;
-				Opt->optimize_rmsd(MExtract2, opt_result);
-//                Opt->optimize_rmsd(M2, opt_result);
+                if (MExtract2->mymol.size() > 0){
+                    Opt->optimize_rmsd(MExtract2, opt_result);
+                }
 
                 if (opt_result->succeded){
-                    printf("\tMatched residues:\n");
+                    sprintf(info, "\tMatched residues:");
+                    Writer->print_info(info);
                     for (unsigned a=0; a< opt_result->imatched1.size(); a++){
-                        printf("\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f\n", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
+                        sprintf(info, "\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
                                MExtract2->filename.c_str(), opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
+                        Writer->print_info(info);
                     }
                 }
+
                 else {
-                    printf("No matched results for %-15.15s\n", MExtract2->filename.c_str());
+                    if (Input->verbose){
+                        sprintf(info, "No matched results for %-15.15s", MExtract2->filename.c_str());
+                        Writer->print_info(info);
+                    }
                 }
 
 				if (opt_result->succeded and Input->write_pdb){
