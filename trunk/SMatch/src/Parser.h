@@ -32,6 +32,7 @@ public:
 	bool verbose;
     int matching_residues;
     int parallel_jobs;
+    double max_trans;
 	Parser(char* arg);
 	virtual ~Parser();
 	void parse_param(string param, ifstream &input);

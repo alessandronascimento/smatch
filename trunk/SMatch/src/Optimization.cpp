@@ -76,6 +76,7 @@ double Optimization::post_optimize_rmsd_function(const std::vector<double> &x, s
 	double f=0.00;
 
     new_xyz = Manip->rototranslate(odata->M2, x[0], x[1], x[2], x[3], x[4], x[5]);
+
     for (unsigned i=0; i< odata->m1_residues.size(); i++){
     	f+= Optimization::compute_rmsd_non_similar(M1, odata->M2, new_xyz, odata->m1_residues[i], odata->m2_residues[i]);
     }
@@ -105,20 +106,20 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 	lb[0] = -180.0;
 	lb[1] = -90.0;
 	lb[2] = -180.0;
-	lb[3] = -50.0;
-	lb[4] = -50.0;
-	lb[5] = -50.0;
+    lb[3] = -Input->max_trans;
+    lb[4] = -Input->max_trans;
+    lb[5] = -Input->max_trans;
 	vector<double> ub(6);
 	ub[0] = 180.0;
 	ub[1] = 90.0;
 	ub[2] = 180.0;
-	ub[3] = 50.0;
-	ub[4] = 50.0;
-	ub[5] = 50.0;
+    ub[3] = Input->max_trans;
+    ub[4] = Input->max_trans;
+    ub[5] = Input->max_trans;
 
 	opt->set_lower_bounds(lb);
 	opt->set_upper_bounds(ub);
-	opt->set_xtol_rel(1.0E-3);
+    opt->set_xtol_rel(1.0E-6);
 	opt->set_maxtime(20);
 
 	vector<double> x(6);
@@ -227,8 +228,8 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     			nlopt::opt *opt2 = new nlopt::opt(nlopt::LN_NELDERMEAD,6);
     			opt2->set_lower_bounds(lb);
     			opt2->set_upper_bounds(ub);
-    			opt2->set_xtol_rel(1.0E-4);
-    			opt2->set_maxtime(60);
+                opt2->set_xtol_rel(1.0E-6);
+                opt2->set_maxtime(30);
     			opt_vector_data* odata2 = new opt_vector_data;
     			odata2->m1_residues = nmatched1;
     			odata2->m2_residues = nmatched2;
@@ -257,7 +258,7 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
     	sprintf(info, "FILE = %-40.40s RMSD = %8.3f  N = %4d",M2->filename.c_str(), optimal_rmsd, optimal_Nres);
     	Writer->print_info(info);
 
-    	opt_result->rmsd = optimal_rmsd;
+        opt_result->rmsd = optimal_rmsd;
     	opt_result->xyz = xyz;
     	opt_result->rotrans = optimal_x;
     	opt_result->succeded = true;
