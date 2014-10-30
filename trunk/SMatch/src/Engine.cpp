@@ -234,11 +234,11 @@ int Engine::run_over_mpi(int argc, char* argv[], Mol* ME1, vector<string> unique
         }
 
 		scatter(world, chuncks, tmp,0);
-		serial_search(ME1, Writer, Input, unique, tmp);
+        serial_search(ME1, Input, unique, tmp);
 	}
 	else{
 		scatter(world, tmp, 0);
-		serial_search(ME1, Writer, Input, unique, tmp);
+        serial_search(ME1, Input, unique, tmp);
 	}
 	return 0;
 }
