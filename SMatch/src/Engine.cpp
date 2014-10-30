@@ -284,9 +284,7 @@ int Engine::serial_search_omp(Mol* ME1, Parser* Input, vector<string> unique, ve
                 opt_result_t* opt_result = new opt_result_t;
                 opt_result->succeded = false;
                 Optimization* Opt = new Optimization(Writer, ME1, Input);
-                if (MExtract2->mymol.size() > 0){
-                    Opt->optimize_rmsd(MExtract2, opt_result);
-                }
+                Opt->optimize_rmsd(MExtract2, opt_result);
 
                 if (opt_result->succeded){
                     sprintf(info, "\tMatched residues:");
@@ -306,11 +304,14 @@ int Engine::serial_search_omp(Mol* ME1, Parser* Input, vector<string> unique, ve
                 }
 
 				if (opt_result->succeded and Input->write_pdb){
-					Coord* CoordManip = new Coord;
-					xyz = CoordManip->rototranslate(M2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
+
+                    Coord* CoordManip = new Coord;
+                    xyz.clear();
+                    xyz = CoordManip->rototranslate_new_ref(M2, MExtract2, opt_result->rotrans[0], opt_result->rotrans[1], opt_result->rotrans[2], opt_result->rotrans[3],
 							opt_result->rotrans[4], opt_result->rotrans[5]);
 					delete CoordManip;
 					Writer->write_pdb(M2, xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch"));
+//                    Writer->write_pdb(MExtract2, opt_result->xyz, 0.0, opt_result->rmsd, (pdb_list[i].substr(0,pdb_list[i].find(".pdb")) + "_smatch_site"));
 				}
 				delete Opt;
 				delete opt_result;

@@ -16,6 +16,7 @@ Parser::Parser(char* arg) {
     matching_residues = -1;
     this->parallel_jobs = 1;
     this->directory = "./";
+    this->max_trans = 100.0;
 	ifstream input(arg);
 	char line[256];
 
@@ -80,6 +81,9 @@ void Parser::parse_param(string param, ifstream &input){
     }
     else if ( param == "parallel_jobs"){
         input >> this->parallel_jobs;
+    }
+    else if (param == "maximal_translation"){
+        input >> this->max_trans;
     }
 }
 
