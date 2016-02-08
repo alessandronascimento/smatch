@@ -119,7 +119,7 @@ void Optimization::optimize_rmsd(Mol* M2, opt_result_t* opt_result){
 
 	opt->set_lower_bounds(lb);
 	opt->set_upper_bounds(ub);
-    opt->set_xtol_rel(1.0E-6);
+    opt->set_xtol_rel(1.0E-4);
 	opt->set_maxtime(20);
 
 	vector<double> x(6);

@@ -16,7 +16,7 @@ void Engine::print_mol_info(Mol* M){
     sprintf(info, "Mol %12.12s has %d residues matching the criteria:", M->filename.c_str(), int(M->mymol.size()));
     Writer->print_info(info);
 	for (unsigned i=0; i< M->mymol.size(); i++){
-        sprintf(info, "\t %3.3s %1.1s %4d", M->mymol[i].resname.c_str(), M->mymol[i].chain.c_str(), M->mymol[i].resnumber);
+        sprintf(info, "    %3.3s %1.1s %4d", M->mymol[i].resname.c_str(), M->mymol[i].chain.c_str(), M->mymol[i].resnumber);
         Writer->print_info(info);
 	}
 }
@@ -130,7 +130,7 @@ int Engine::serial_search(Mol* ME1, Parser* Input, vector<string> unique, vector
                 sprintf(info, "Found %d matching residues in search molecule.", int(MExtract2->mymol.size()));
                 Writer->print_info(info);
 				for (unsigned a=0; a<MExtract2->mymol.size(); a++){
-                    sprintf(info, "\t\t%s%d", MExtract2->mymol[a].resname.c_str(), MExtract2->mymol[a].resnumber);
+                    sprintf(info, "        %s%d", MExtract2->mymol[a].resname.c_str(), MExtract2->mymol[a].resnumber);
                     Writer->print_info(info);
 				}
 			}
@@ -145,10 +145,10 @@ int Engine::serial_search(Mol* ME1, Parser* Input, vector<string> unique, vector
             }
 
             if (opt_result->succeded){
-                sprintf(info, "\tMatched residues:");
+                sprintf(info, "    Matched residues:");
                 Writer->print_info(info);
                 for (unsigned a=0; a< opt_result->imatched1.size(); a++){
-                    sprintf(info, "\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
+                    sprintf(info, "        %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
                            MExtract2->filename.c_str(), opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
                     Writer->print_info(info);
                 }
@@ -287,10 +287,10 @@ int Engine::serial_search_omp(Mol* ME1, Parser* Input, vector<string> unique, ve
                 Opt->optimize_rmsd(MExtract2, opt_result);
 
                 if (opt_result->succeded){
-                    sprintf(info, "\tMatched residues:");
+                    sprintf(info, "    Matched residues:");
                     Writer->print_info(info);
                     for (unsigned a=0; a< opt_result->imatched1.size(); a++){
-                        sprintf(info, "\t\t %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
+                        sprintf(info, "        %15.15s %4.4s %4d       %15.15s %4.4s %4d %6.4f", ME1->filename.c_str(), opt_result->smatched1[a].c_str(), opt_result->imatched1[a],
                                MExtract2->filename.c_str(), opt_result->smatched2[a].c_str(), opt_result->imatched2[a], opt_result->rmsds[a]);
                         Writer->print_info(info);
                     }

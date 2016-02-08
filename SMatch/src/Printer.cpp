@@ -9,6 +9,7 @@
 
 Printer::Printer() {
 	logfile = fopen("SMatch.log", "w");
+    this->print_welcome();
 }
 
 Printer::Printer(Parser* Input){
